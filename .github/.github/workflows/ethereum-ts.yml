@@ -2,7 +2,7 @@ name: Ethereum Typescript
 on:
   push:
     paths:
-      - 'ethereum/gateway-eth-ts/**'
+      - 'gateway-eth-ts/**'
       - '.github/**'
   pull_request:
 jobs:
