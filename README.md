@@ -13,6 +13,7 @@
     * [EIP-2771: Meta transactions](#eip-2771--meta-transactions)
     * [EIP-712: Typed data signing](#eip-712--typed-data-signing)
     * [EIP-1822: Universal Upgradeable Proxy Standard](#eip-1822--universal-upgradeable-proxy-standard)
+    * [EIP-4626: Tokenized Vaults](#eip-4626-token-vaults)
 - [Glossary](#glossary)
 
 ## Summary
@@ -37,7 +38,7 @@ The strength of the model comes from the idea of a "Gatekeeper Network".
 
 While anyone can be a gatekeeper, and issue tokens, they must do so in the context of a Gatekeeper Network.
 A gatekeeper network is a group of gatekeepers that have agreed to work together to issue GTs for a particular
-use-case.
+use-case. A gatekeeper network has a single address that acts as the primary authority for configuring the network and managing gatekeepers.
 
 For example, a Gateway Token indicating that the user is over 18 years of age may be issued by a number of different
 gatekeepers. However, the client smart contract should not need to specify which gatekeeper it trusts to verify this claim.
@@ -49,6 +50,8 @@ added to, and removed from, the network.
 
 If a gatekeeper is removed from a gatekeeper network, the tokens that they have issued will still be valid,
 unless the gatekeeper network is configured to automatically revoke them.
+
+Gatekeeper networks can also configure a fee percentage (in either the chains native coin or an approved ERC-20 token) such that they receive a portion of gatekeeper fees on gateway token operations.
 
 ## Integration
 
@@ -80,11 +83,9 @@ In addition, GTs add features that give gatekeepers more control over the lifecy
 
 ## Costs
 
-The Gateway Protocol includes a charge mechanism, allowing gatekeepers to charge users for the gateway tokens that they issue,
-either in the chain's native coin, or an ERC20 token.
+The Gateway Protocol includes a charge mechanism, allowing gatekeepers to charge users for the gateway tokens that they issue, refresh or unfreeze either in the chain's native coin, or an ERC20 token. Gateway networks can also configure a percentage of gatekeeper fees (up to 100%) that are paid to the network during token operations.
 
-The cost of a gateway token is determined by the gatekeeper and can be changed at any time. It is good practice
-for the gatekeeper to advertise their prices, but this does not need to be on chain.
+The cost associated with gateway token operations is determined by the gatekeeper and can be changed at any time but a gatekeeper must wait 7 days before they are able to update fees again.
 
 ### Charging while Forwarding
 
@@ -105,6 +106,7 @@ The Gateway Protocol is built on top of the following EVM standards:
 - EIP2771: [Meta transactions](https://eips.ethereum.org/EIPS/eip-2771)
 - EIP712: [Typed data signing](https://eips.ethereum.org/EIPS/eip-712)
 - EIP1822: [Universal Upgradeable Proxy Standard](https://eips.ethereum.org/EIPS/eip-1822)
+- EIP4626: [Tokenized Vaults](https://eips.ethereum.org/EIPS/eip-4626)
 
 ### EIP-3525: Semi-fungible token
 
@@ -192,6 +194,12 @@ Of the upgradeability standards available, the EIP-1822 (UUPS) standard was chos
 
 The upgrade key (the key used to upgrade the protocol) is set to an Identity.com key on deployment. It can be rotated by a
 superadmin. The superadmin can also disable upgradeability.
+
+### EIP-4626: Tokenized Vault
+
+The Gateway Protocol may require gatekeepers to deposit a minimum amount of stake to participate in a network (ie joining a network and charging for gateway token operations). The EIP-4626 standard is used by the gateway protocol staking contract to facilitate users depositing stake in the approved ERC-20 token and redeeming stake to retreive their deposited assets.
+
+The only functionallity the gateway protocol adds on-top of the EIP-4626 is a minimum stake amount that can be set by the protocol admin. The protocol enforces this minimum stake on gatekeepers on all gateway token operations that involve a charge.
 
 ## Additional Features
 
