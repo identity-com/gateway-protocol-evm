@@ -18,7 +18,7 @@
 
 ## Summary
 
-This document describes the Ethereum Virtual Machine (EVM) implementation of the Identity.com Gateway Protocol.
+This document describes the Ethereum Virtual Machine (EVM) implementation of the Identity.com Gateway Protocol. This implementation is built upon the [first version of the protocol](https://github.com/identity-com/on-chain-identity-gateway)
 
 The Gateway Protocol is a standard that allows smart contracts to add access control constraints, requiring 
 that a user has a valid Gateway Token (GT) in order to interact with the smart contract.
