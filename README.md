@@ -18,7 +18,7 @@
 
 ## Summary
 
-This document describes the Ethereum Virtual Machine (EVM) implementation of the Identity.com Gateway Protocol. This implementation is built upon the [first version of the protocol](https://github.com/identity-com/on-chain-identity-gateway)
+This document describes the Ethereum Virtual Machine (EVM) implementation of the Identity.com Gateway Protocol. This implementation is built upon the [first version of the protocol](https://github.com/identity-com/on-chain-identity-gateway).
 
 The Gateway Protocol is a standard that allows smart contracts to add access control constraints, requiring 
 that a user has a valid Gateway Token (GT) in order to interact with the smart contract.
@@ -197,7 +197,7 @@ superadmin. The superadmin can also disable upgradeability.
 
 ### EIP-4626: Tokenized Vault
 
-The Gateway Protocol may require gatekeepers to deposit a minimum amount of stake to participate in a network (ie joining a network and charging for gateway token operations). The EIP-4626 standard is used by the gateway protocol staking contract to facilitate users depositing stake in the approved ERC-20 token and redeeming stake to retreive their deposited assets.
+The Gateway Protocol may require gatekeepers to deposit a minimum amount of stake to participate in a network (ie joining a network and charging for gateway token operations). The EIP-4626 standard is used by the gateway protocol staking contract to facilitate users depositing stake in the approved ERC-20 token and redeeming stake to retreive their deposited assets. The staking vault is **non-yield bearing** and depositied assets mint shares at a 1:1 ratio to the ERC-20 token used for deposits.
 
 The only functionallity the gateway protocol adds on-top of the EIP-4626 is a minimum stake amount that can be set by the protocol admin. The protocol enforces this minimum stake on gatekeepers on all gateway token operations that involve a charge.
 
