@@ -15,9 +15,4 @@ contract StubMultisig {
         _gatewayTokenContract = gatewayTokenContract;
         _gatekeeperNetwork = gatekeeperNetwork;
     }
-
-    // call the gateway token contract transferDAOMembership function
-    function reassignOwnership(address newOwner) external {
-        IGatewayToken gatewayToken = IGatewayToken(_gatewayTokenContract);
-    }
 }

@@ -18,7 +18,7 @@ interface IERC721Freezable {
      * @dev Triggers to freeze gateway token
      * @param tokenId Gateway token id
      */
-    function freeze(uint256 tokenId, ChargeParties memory partiesInCharge) external;
+    function freeze(uint256 tokenId) external;
 
     /**
      * @dev Triggers to unfreeze gateway token

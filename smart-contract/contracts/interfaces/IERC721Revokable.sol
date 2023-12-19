@@ -13,5 +13,5 @@ interface IERC721Revokable {
      * @dev Triggers to revoke gateway token
      * @param tokenId Gateway token id
      */
-    function revoke(uint256 tokenId, ChargeParties memory partiesInCharge) external;
+    function revoke(uint256 tokenId) external;
 }
