@@ -2,7 +2,7 @@ name: Ethereum Smart Contract
 on:
   push:
     paths:
-      - 'ethereum/smart-contract/**'
+      - 'smart-contract/**'
       - '.github/**'
   pull_request:
 jobs:
@@ -17,7 +17,7 @@ jobs:
         
     defaults:
       run:
-        working-directory: ./ethereum/smart-contract
+        working-directory: ./smart-contract
 
     steps:
       - name: Checkout repo
@@ -33,7 +33,7 @@ jobs:
         with:
           path: |
             ./node_modules
-          key: yarn-ethereum-${{ hashFiles('ethereum/yarn.lock') }}
+          key: yarn-ethereum-${{ hashFiles('yarn.lock') }}
 
       - name: NPM login
         run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
