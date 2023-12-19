@@ -1132,7 +1132,7 @@ describe('GatewayToken', async () => {
         tokenSender: ZERO_ADDRESS,
       });
       const [tokenId] = await gatewayToken.getTokenIdsByOwnerAndNetwork(userToBeFrozen.address, gkn1, true);
-      await gatewayToken.connect(gatekeeper).freeze(tokenId, { tokenSender: ZERO_ADDRESS, recipient: gatekeeper.address});
+      await gatewayToken.connect(gatekeeper).freeze(tokenId);
       expect(await checkVerification(userToBeFrozen.address, gkn1)).to.be.false;
 
       // create a forwarded metatx to unfreeze the user
@@ -1145,7 +1145,7 @@ describe('GatewayToken', async () => {
           .connect(alice)
           .execute(forwardedUnfreezeTx.request, forwardedUnfreezeTx.signature, { gasLimit: 1000000 })
       ).wait;
-      await gatewayToken.connect(gatekeeper).freeze(tokenId, { tokenSender: ZERO_ADDRESS, recipient: gatekeeper.address});
+      await gatewayToken.connect(gatekeeper).freeze(tokenId);
       expect(await checkVerification(userToBeFrozen.address, gkn1)).to.be.false;
 
       // cannot replay the unfreeze transaction
