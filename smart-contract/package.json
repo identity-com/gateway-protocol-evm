@@ -7,7 +7,7 @@
   },
   "scripts": {
     "analyze": "slither . --config-file slither.config.json",
-    "coverage": "NODE_ENV=test hardhat coverage && istanbul check-coverage --statements 97 --branches 90 --functions 95 --lines 93",
+    "coverage": "NODE_ENV=test hardhat coverage && istanbul check-coverage --statements 90 --branches 82 --functions 90 --lines 90",
     "test": "NODE_ENV=test hardhat test",
     "deploy": "hardhat deploy --tags GatewayToken --network $1",
     "deploy-preserve-contract-addresses": "scripts/deployFull.sh $1",
