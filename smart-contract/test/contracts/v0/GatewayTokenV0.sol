@@ -171,16 +171,8 @@ contract GatewayTokenV0 is
         _freeze(tokenId);
     }
 
-    function freeze(uint256 tokenId, ChargeParties calldata partiesInCharge) external override {
-
-    }
-
-    function revoke(uint256 tokenId, ChargeParties calldata partiesInCharge) external override {
-
-    }
-
     function unfreeze(uint256 tokenId, ChargeParties calldata partiesInCharge) external {
-        
+        _unfreeze(tokenId);
     }
 
     /**

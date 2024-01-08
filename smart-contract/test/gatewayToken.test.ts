@@ -783,22 +783,22 @@ describe('GatewayToken', async () => {
     });
 
     it('freeze token', async () => {
-      await gatewayToken.connect(gatekeeper).freeze(dummyWalletTokenId, { tokenSender: ZERO_ADDRESS, recipient: gatekeeper.address});
+      await gatewayToken.connect(gatekeeper).freeze(dummyWalletTokenId);
 
       return expect(await checkVerification(dummyWallet, gkn1)).to.be.false;
     });
 
     it('freeze token - revert if already frozen', async () => {
-      await gatewayToken.connect(gatekeeper).freeze(dummyWalletTokenId, { tokenSender: ZERO_ADDRESS, recipient: gatekeeper.address});
+      await gatewayToken.connect(gatekeeper).freeze(dummyWalletTokenId);
 
-      await expect(gatewayToken.connect(gatekeeper).freeze(dummyWalletTokenId, { tokenSender: ZERO_ADDRESS, recipient: gatekeeper.address})).to.be.revertedWithCustomError(
+      await expect(gatewayToken.connect(gatekeeper).freeze(dummyWalletTokenId)).to.be.revertedWithCustomError(
         gatewayToken,
         'GatewayToken__TokenDoesNotExistOrIsInactive',
       );
     });
 
     it('unfreeze token', async () => {
-      await gatewayToken.connect(gatekeeper).freeze(dummyWalletTokenId, { tokenSender: ZERO_ADDRESS, recipient: gatekeeper.address});
+      await gatewayToken.connect(gatekeeper).freeze(dummyWalletTokenId);
 
       await gatewayToken.connect(gatekeeper).unfreeze(dummyWalletTokenId, { tokenSender: ZERO_ADDRESS, recipient: gatekeeper.address});
 
@@ -820,11 +820,11 @@ describe('GatewayToken', async () => {
       });
       const dummyWalletTokenIds = await gatewayToken.getTokenIdsByOwnerAndNetwork(alice.address, gkn1, true);
 
-      await gatewayToken.connect(gatekeeper).freeze(dummyWalletTokenIds[0], { tokenSender: ZERO_ADDRESS, recipient: gatekeeper.address});
+      await gatewayToken.connect(gatekeeper).freeze(dummyWalletTokenIds[0]);
 
       expect(await checkVerification(alice.address, gkn1)).to.be.true;
 
-      await gatewayToken.connect(gatekeeper).freeze(dummyWalletTokenIds[1], { tokenSender: ZERO_ADDRESS, recipient: gatekeeper.address});
+      await gatewayToken.connect(gatekeeper).freeze(dummyWalletTokenIds[1]);
 
       expect(await checkVerification(alice.address, gkn1)).to.be.false;
 
@@ -888,7 +888,7 @@ describe('GatewayToken', async () => {
     });
 
     it('revoke a token', async () => {
-      await gatewayToken.connect(gatekeeper).revoke(dummyWalletTokenId, { tokenSender: ZERO_ADDRESS, recipient: gatekeeper.address});
+      await gatewayToken.connect(gatekeeper).revoke(dummyWalletTokenId);
       return expect(await checkVerification(dummyWallet, gkn1)).to.be.false;
     });
 
@@ -911,7 +911,7 @@ describe('GatewayToken', async () => {
       });
       const dummyWalletTokenIds = await gatewayToken.getTokenIdsByOwnerAndNetwork(dummyWallet, gkn1, true);
 
-      await gatewayToken.connect(gatekeeper).revoke(dummyWalletTokenIds[0], { tokenSender: ZERO_ADDRESS, recipient: gatekeeper.address});
+      await gatewayToken.connect(gatekeeper).revoke(dummyWalletTokenIds[0]);
 
       let validity = await gatewayToken.callStatic['verifyToken(uint256)'](dummyWalletTokenIds[0]);
       expect(validity).to.equal(false);
@@ -1132,7 +1132,7 @@ describe('GatewayToken', async () => {
         tokenSender: ZERO_ADDRESS,
       });
       const [tokenId] = await gatewayToken.getTokenIdsByOwnerAndNetwork(userToBeFrozen.address, gkn1, true);
-      await gatewayToken.connect(gatekeeper).freeze(tokenId, { tokenSender: ZERO_ADDRESS, recipient: gatekeeper.address});
+      await gatewayToken.connect(gatekeeper).freeze(tokenId);
       expect(await checkVerification(userToBeFrozen.address, gkn1)).to.be.false;
 
       // create a forwarded metatx to unfreeze the user
@@ -1145,7 +1145,7 @@ describe('GatewayToken', async () => {
           .connect(alice)
           .execute(forwardedUnfreezeTx.request, forwardedUnfreezeTx.signature, { gasLimit: 1000000 })
       ).wait;
-      await gatewayToken.connect(gatekeeper).freeze(tokenId, { tokenSender: ZERO_ADDRESS, recipient: gatekeeper.address});
+      await gatewayToken.connect(gatekeeper).freeze(tokenId);
       expect(await checkVerification(userToBeFrozen.address, gkn1)).to.be.false;
 
       // cannot replay the unfreeze transaction
