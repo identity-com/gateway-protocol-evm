@@ -11,6 +11,7 @@ import '@nomiclabs/hardhat-solhint';
 import '@nomiclabs/hardhat-etherscan';
 import '@openzeppelin/hardhat-upgrades';
 import 'hardhat-contract-sizer';
+import "@nomicfoundation/hardhat-foundry";
 
 import { checkGT } from './tasks/checkGT';
 import { createGatekeeperNetwork } from './tasks/createGatekeeperNetwork';
