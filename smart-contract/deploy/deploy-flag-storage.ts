@@ -1,16 +1,9 @@
-import { sleep, loadRelayerSigner } from "./defender-utils";
+import { sleep, getDeploymentSigner } from "./defender-utils";
 import hre , { ethers, upgrades } from "hardhat";
 import { Signer } from '@ethersproject/abstract-signer/src.ts'
 
-async function main() {
-    const shouldUseDefender = process.env.SHOULD_USE_DEFENDER!.toLowerCase() == "true";
-    
-    let signer: Signer;
-
-    if(shouldUseDefender) {
-        signer = await loadRelayerSigner();
-    } else {
-    }
+async function main() {     
+    const signer: Signer = await getDeploymentSigner();
 
     const FlagStorage = await ethers.getContractFactory("FlagsStorage", signer!);
 

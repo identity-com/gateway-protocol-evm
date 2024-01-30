@@ -1,22 +1,15 @@
-import { addContractToAdmin, sleep, verify, loadRelayerSigner } from "./defender-utils";
+import { addContractToAdmin, sleep, verify, getDeploymentSigner } from "./defender-utils";
 import { Signer } from '@ethersproject/abstract-signer/src.ts'
 import { ethers } from 'hardhat';
 
 
 async function main() {
-    const shouldUseDefender = process.env.SHOULD_USE_DEFENDER!.toLowerCase() == "true";
-
     const testnetGatekeeperContractAddress = "0x8eB5f23002aA571B9c49b6b4c820c88c08e9ff9b";
     const testnetStakingContractAddress = "0xe647c80DD554e89b70629E5f3751101A1a7F3cCE";
 
     const args = [testnetGatekeeperContractAddress, testnetStakingContractAddress];
         
-    let signer: Signer;
-
-    if(shouldUseDefender) {
-        signer = await loadRelayerSigner(); 
-    } else {
-    }
+    const signer: Signer = await getDeploymentSigner();
 
     const GatewayNetworkContractFactory = await ethers.getContractFactory("GatewayNetwork", signer!);
     const gatewayNetworkContract = await GatewayNetworkContractFactory.deploy();

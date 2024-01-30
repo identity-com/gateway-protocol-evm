@@ -1,20 +1,13 @@
-import { addContractToAdmin, loadRelayerSigner, sleep, verify } from "./defender-utils";
+import { addContractToAdmin, getDeploymentSigner, sleep, verify } from "./defender-utils";
 import { Signer } from '@ethersproject/abstract-signer/src.ts'
 import { ethers } from 'hardhat';
 
 
 async function main() {
-    const shouldUseDefender = process.env.SHOULD_USE_DEFENDER!.toLowerCase() == "true";
-
     const args = ['Dummy USDC', 'USDC', 1000000, process.env.BSC_TESTNET_RELAYER!]
    
 
-    let signer: Signer;
-
-    if(shouldUseDefender) {
-        signer = await loadRelayerSigner();
-    } else {
-    }
+    const signer: Signer = await getDeploymentSigner();
 
     const DummyERC20ContractFactory = await ethers.getContractFactory("DummyERC20", signer!);
     const dummyERC20Contract = await DummyERC20ContractFactory.deploy(args);

@@ -2,7 +2,7 @@ import hre, { run } from "hardhat";
 import { DefenderRelayProvider, DefenderRelaySigner } from "@openzeppelin/defender-relay-client/lib/ethers";
 import { fromChainId } from '@openzeppelin/defender-base-client';
 import { AdminClient } from '@openzeppelin/defender-admin-client';
-
+import { ethers } from 'hardhat';
 
 export async function loadRelayerSigner() {
   const credentials = {apiKey: process.env.DEFENDER_RELAY_API_KEY!, apiSecret: process.env.DEFENDER_RELAY_SECRET!};
@@ -30,6 +30,16 @@ export async function getContractFromDefenderByName(contractName: string) {
     return contracts[0].address;
   }
   return
+}
+
+export async function getDeploymentSigner() {
+  const shouldUseDefender = process.env.SHOULD_USE_DEFENDER!.toLowerCase() == "true";
+
+  if(shouldUseDefender) {
+    return await loadRelayerSigner();
+  } else {
+    return new ethers.Wallet(process.env.LOCAL_DEPLOY_PRIVATE_KEY!);
+  }
 }
 
 export async function verify(contractAddress: string, constructorArgs: any[], contract?: string) {

@@ -1,20 +1,13 @@
-import { addContractToAdmin, loadRelayerSigner, sleep, verify } from "./defender-utils";
+import { addContractToAdmin, getDeploymentSigner, sleep, verify } from "./defender-utils";
 import { ethers } from 'hardhat';
 import { Signer } from '@ethersproject/abstract-signer/src.ts'
 
 async function main() {
-    const shouldUseDefender = process.env.SHOULD_USE_DEFENDER!.toLowerCase() == "true";
-
     const testnetTokenContractAddress = "0xf380c37eFf6c5ab0593927dFf4Bc7AF6428D541F";
 
     const args = [testnetTokenContractAddress , 'Identity Test Staking Vault', "ID_TEST_STAKE"];
     
-    let signer: Signer;
-
-    if(shouldUseDefender) {
-        signer = await loadRelayerSigner();
-    } else {
-    }
+    const signer: Signer = await getDeploymentSigner();
 
     const GatewayStakingContractFactory = await ethers.getContractFactory("GatewayStaking", signer!);
     const gatewayStakingContract = await GatewayStakingContractFactory.deploy(args);

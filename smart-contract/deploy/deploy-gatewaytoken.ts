@@ -1,16 +1,9 @@
-import { sleep, loadRelayerSigner } from "./defender-utils";
+import { sleep, getDeploymentSigner } from "./defender-utils";
 import hre , { ethers, upgrades } from "hardhat";
 import { Signer } from '@ethersproject/abstract-signer/src.ts'
 
-async function main() {
-    const shouldUseDefender = process.env.SHOULD_USE_DEFENDER!.toLowerCase() == "true";
-    
-    let signer: Signer;
-
-    if(shouldUseDefender) {
-        signer = await loadRelayerSigner();
-    } else {
-    }
+async function main() {    
+    const signer: Signer = await getDeploymentSigner();
 
     const gatewayNetworkContractAddress = "0xAccdD5e32245b090e102E94E9a78A8996F834333";
     const gatekeeperContractAddress = "0x8eB5f23002aA571B9c49b6b4c820c88c08e9ff9b";
