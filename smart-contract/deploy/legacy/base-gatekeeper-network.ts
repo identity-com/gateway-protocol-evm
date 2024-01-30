@@ -1,6 +1,6 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { DeployFunction } from 'hardhat-deploy/types';
-import { getAccounts } from '../scripts/util';
+import { getAccounts } from '../../scripts/util';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { Contract } from 'ethers';
 

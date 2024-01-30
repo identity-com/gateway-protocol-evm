@@ -1,23 +1,42 @@
-import { HardhatRuntimeEnvironment } from 'hardhat/types';
-import { DeployFunction } from 'hardhat-deploy/types';
+import { addContractToAdmin, loadRelayerSigner, sleep, verify } from "./defender-utils";
+import { Signer } from '@ethersproject/abstract-signer/src.ts'
+import { ethers } from 'hardhat';
 
-const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-  const { deployments, ethers, getNamedAccounts } = hre;
-  const { deploy } = deployments;
-  const { deployer } = await getNamedAccounts();
 
-  const erc20Deployment = await deploy('DummyERC20', {
-    from: deployer,
-    args: ['Dummy USDC', 'USDC', 1000000, deployer],
-    log: true,
-    deterministicDeployment: true,
-  });
+async function main() {
+    const shouldUseDefender = process.env.SHOULD_USE_DEFENDER!.toLowerCase() == "true";
 
-  console.log('Deployed DummyERC20 at ' + erc20Deployment.address);
-};
+    const args = ['Dummy USDC', 'USDC', 1000000, process.env.BSC_TESTNET_RELAYER!]
+   
 
-export default func;
-func.skip = async () => process.env.NODE_ENV !== 'test';
-func.id = 'create_dummy_erc20';
-func.tags = ['DummyERC20'];
-func.dependencies = [];
+    let signer: Signer;
+
+    if(shouldUseDefender) {
+        signer = await loadRelayerSigner();
+    } else {
+    }
+
+    const DummyERC20ContractFactory = await ethers.getContractFactory("DummyERC20", signer!);
+    const dummyERC20Contract = await DummyERC20ContractFactory.deploy(args);
+
+    await dummyERC20Contract.deployed();
+    const deployedAddress = dummyERC20Contract.address;
+
+    console.log(`DummyERC20 deployed at ${deployedAddress}`);
+
+    await sleep(6000);
+
+    await verify(deployedAddress,[]);
+
+    // Need to wait to avoid rate limit
+    await sleep(2000);
+    await addContractToAdmin(deployedAddress, "DummyERC20");
+}
+
+// We recommend this pattern to be able to use async/await everywhere
+// and properly handle errors.
+main().catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+});
+
