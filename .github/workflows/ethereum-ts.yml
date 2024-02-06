@@ -4,11 +4,8 @@ on:
     paths:
       - 'gateway-eth-ts/**'
       - '.github/**'
-  pull_request:
 jobs:
   ethereum-build:
-    # Disabling this workflow from running due to smart contract changes that break the typescript client
-    if: false
     name: Build, lint and test the ethereum libraries on ${{ matrix.os }}
 
     runs-on: ${{ matrix.os }}
@@ -30,15 +27,15 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
-      - name: Cache node dependencies
-        uses: actions/cache@v2
-        with:
-          path: |
-            ./node_modules
-          key: yarn-ethereum-${{ hashFiles('yarn.lock') }}
+      # - name: Cache node dependencies
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: |
+      #       ./node_modules
+      #     key: yarn-ethereum-${{ hashFiles('yarn.lock') }}
 
-      - name: NPM login
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
+      # - name: NPM login
+      #   run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
 
       - name: Install
         run: yarn
