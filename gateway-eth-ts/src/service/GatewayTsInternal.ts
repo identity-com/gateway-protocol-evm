@@ -83,95 +83,6 @@ export class GatewayTsInternal<
     return tokenIds[0];
   }
 
-  createNetwork(
-    name: string,
-    network: bigint,
-    daoGoverned: boolean,
-    daoManager?: string
-  ): Promise<O> {
-    return this.gatewayTokenContract.createNetwork(
-      network,
-      name,
-      daoGoverned,
-      daoManager || NULL_ADDRESS,
-      this.overrides
-    );
-  }
-
-  renameNetwork(name: string, network: bigint): Promise<O> {
-    return this.gatewayTokenContract.renameNetwork(
-      network,
-      name,
-      this.overrides
-    );
-  }
-
-  getGatekeeperNetwork(network: bigint): Promise<string> {
-    return this.gatewayTokenContract.getNetwork(
-      network,
-      this.readOnlyOverrides
-    );
-  }
-
-  listNetworks(
-    max: bigint = BigInt(256),
-    startAt: bigint = BigInt(0)
-  ): Promise<Record<string, bigint>> {
-    // Warning - can be inefficient and spam RPCs - use sparings
-    const networks: Record<string, bigint> = {};
-    const promises = Array.from(
-      { length: Number(max) },
-      (_, i) => i + Number(startAt)
-    ).map(async (i) => {
-      const network = (await this.getGatekeeperNetwork(BigInt(i)).catch(
-        () => null
-      )) as string | null;
-      if (network) networks[network] = BigInt(i);
-    });
-
-    return Promise.all(promises).then(() => networks);
-  }
-
-  addGatekeeper(gatekeeper: string, network: bigint): Promise<O> {
-    return this.gatewayTokenContract.addGatekeeper(
-      gatekeeper,
-      network,
-      this.overrides
-    );
-  }
-
-  removeGatekeeper(gatekeeper: string, network: bigint): Promise<O> {
-    return this.gatewayTokenContract.removeGatekeeper(
-      gatekeeper,
-      network,
-      this.overrides
-    );
-  }
-
-  addNetworkAuthority(authority: string, network: bigint): Promise<O> {
-    return this.gatewayTokenContract.addNetworkAuthority(
-      authority,
-      network,
-      this.overrides
-    );
-  }
-
-  removeNetworkAuthority(authority: string, network: bigint): Promise<O> {
-    return this.gatewayTokenContract.removeNetworkAuthority(
-      authority,
-      network,
-      this.overrides
-    );
-  }
-
-  setNetworkFeature(featureBitmask: bigint, network: bigint): Promise<O> {
-    return this.gatewayTokenContract.setNetworkFeatures(
-      network,
-      featureBitmask,
-      this.overrides
-    );
-  }
-
   issue(
     owner: string,
     network: bigint,
@@ -179,7 +90,7 @@ export class GatewayTsInternal<
     bitmask: BigNumberish = 0,
     charge: Charge = NULL_CHARGE
   ): Promise<O> {
-    const expirationTime = expiry > 0 ? getExpirationTime(expiry) : 0;
+    const expirationTime = expiry.valueOf() as number > 0 ? getExpirationTime(expiry) : 0;
 
     return this.gatewayTokenContract.mint(
       owner,
@@ -208,7 +119,7 @@ export class GatewayTsInternal<
 
   async unfreeze(owner: string, network: bigint): Promise<O> {
     const tokenId = await this.checkedGetTokenId(owner, network);
-    return this.gatewayTokenContract.unfreeze(tokenId, this.overrides);
+    return this.gatewayTokenContract.unfreeze(tokenId, {tokenSender: "", recipient: ""});
   }
 
   async refresh(
@@ -240,12 +151,14 @@ export class GatewayTsInternal<
     );
   }
 
-  verify(owner: string, network: bigint): Promise<boolean> {
-    return this.gatewayTokenContract["verifyToken(address,uint256)"](
+  async verify(owner: string, network: bigint): Promise<boolean> {
+    const result = await this.gatewayTokenContract["verifyToken(address,uint256)"](
       owner,
       network,
       this.readOnlyOverrides
     );
+
+    return result.data != "0";
   }
 
   async getToken(owner: string, network: bigint): Promise<TokenData | null> {

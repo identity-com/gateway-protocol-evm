@@ -23,14 +23,7 @@ export declare type TokenData = {
 
 // List of the write operations on the GatewayToken contract that are exposed via this library
 export type WriteOps =
-  | "createNetwork"
-  | "renameNetwork"
-  | "addGatekeeper"
-  | "removeGatekeeper"
-  | "addNetworkAuthority"
-  | "removeNetworkAuthority"
-  | "setNetworkFeatures"
-  | "mint"
+    "mint"
   | "setExpiration"
   | "freeze"
   | "unfreeze"
@@ -38,12 +31,6 @@ export type WriteOps =
   | "burn"
   | "setBitmask";
 export const mappedOpNames = [
-  "createNetwork",
-  "renameNetwork",
-  "addGatekeeper",
-  "removeGatekeeper",
-  "addNetworkAuthority",
-  "removeNetworkAuthority",
   "mint",
   "setExpiration",
   "freeze",
@@ -66,12 +53,10 @@ export type MappedWriteOperation<O> = {
 // List of the read operations on the GatewayToken contract that are exposed via this library
 export type ReadOnlyOps =
   | "getToken"
-  | "getNetwork"
   | "verifyToken(address,uint256)"
   | "getTokenIdsByOwnerAndNetwork";
 export const readOnlyOpNames = [
   "getToken",
-  "getNetwork",
   "verifyToken(address,uint256)",
   "getTokenIdsByOwnerAndNetwork",
 ];
