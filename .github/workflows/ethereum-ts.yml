@@ -4,7 +4,6 @@ on:
     paths:
       - 'gateway-eth-ts/**'
       - '.github/**'
-  pull_request:
 jobs:
   ethereum-build:
     name: Build, lint and test the ethereum libraries on ${{ matrix.os }}
