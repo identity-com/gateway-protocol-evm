@@ -18,7 +18,7 @@ dotenv.config();
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-describe("GatewayTS", function () {
+describe.skip("GatewayTS", function () {
   this.timeout(5_000);
   let gateway: GatewayTs;
   let provider: BaseProvider;

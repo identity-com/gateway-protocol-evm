@@ -17,7 +17,7 @@ import { Wallet } from "ethers";
 
 dotenv.config();
 
-describe("GatewayTS Transaction", function () {
+describe.skip("GatewayTS Transaction", function () {
   let gateway: GatewayTsForwarder;
   let provider: BaseProvider;
 

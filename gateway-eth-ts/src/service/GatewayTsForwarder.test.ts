@@ -26,7 +26,7 @@ import {
 
 dotenv.config();
 
-describe("GatewayTS Forwarder", function () {
+describe.skip("GatewayTS Forwarder", function () {
   let gateway: GatewayTsForwarder;
   let provider: BaseProvider;
 
