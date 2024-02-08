@@ -20,25 +20,22 @@ export class GatewayStaking {
     }
 
     async hasMinimumGatekeeperStake(address: string): Promise<boolean> {
-        return await this.gatewayStakingContract.hasMinimumGatekeeperStake(address);
+        return await this.gatewayStakingContract.hasMinimumGatekeeperStake(address, {gasLimit: 300000});
     }
 
     async depositStake(amount: bigint): Promise<ContractTransaction> {
         return await this.gatewayStakingContract.depositStake(amount, {gasLimit: 300000});
     }
 
-    async depositStakeFor(amount: bigint, recipient: string): Promise<BigInt> {
-        const result = await this.gatewayStakingContract.deposit(amount, recipient);
-        return  BigInt(result.data);
+    async depositStakeFor(amount: bigint, recipient: string): Promise<ContractTransaction> {
+        return await this.gatewayStakingContract.deposit(amount, recipient);
     }
 
-    async withdrawStake(amount: bigint): Promise<BigInt> {
-        const result = await this.gatewayStakingContract.withdrawStake(amount);
-        return  BigInt(result.data);
+    async withdrawStake(amount: bigint): Promise<ContractTransaction> {
+        return await this.gatewayStakingContract.withdrawStake(amount, {gasLimit: 300000});
     }
 
-    async withdrawStakeFor(amount: bigint, stakeOwner: string): Promise<BigInt> {
-        const result = await this.gatewayStakingContract.redeem(amount, stakeOwner, stakeOwner);
-        return  BigInt(result.data);
+    async withdrawStakeFor(amount: bigint, stakeOwner: string): Promise<ContractTransaction> {
+        return await this.gatewayStakingContract.redeem(amount, stakeOwner, stakeOwner);
     }
 }

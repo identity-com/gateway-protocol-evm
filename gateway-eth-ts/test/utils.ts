@@ -1,5 +1,5 @@
-import { Wallet } from "ethers";
-import { Provider } from "@ethersproject/providers";
+import { Wallet, ethers } from "ethers";
+import { DefenderRelayProvider, DefenderRelaySigner } from "@openzeppelin/defender-relay-client/lib/ethers";
 
 export const DEFAULT_MNEMONIC =
   "test test test test test test test test test test test junk";
@@ -26,4 +26,20 @@ export const BNB_TESTNET_CONTRACT_ADDRESSES: GatewayProtocolContractAddresses = 
     gatewayStaking: "0xe647c80DD554e89b70629E5f3751101A1a7F3cCE",
     erc20: "0xf380c37eFf6c5ab0593927dFf4Bc7AF6428D541F",
     gatewayToken: "0xf8cd7dE59eBB84faC87850c946d5feD2C8CbdBfA"
+}
+
+export async function loadRelayerSigner() {
+  const credentials = {apiKey: process.env.DEFENDER_RELAY_API_KEY!, apiSecret: process.env.DEFENDER_RELAY_SECRET!};
+  const provider = new DefenderRelayProvider(credentials);
+  return new DefenderRelaySigner(credentials, provider, { speed: 'fast' });
+}
+
+export async function getDeploymentSigner() {
+  const shouldUseDefender = process.env.SHOULD_USE_DEFENDER!.toLowerCase() == "true";
+
+  if(shouldUseDefender) {
+    return await loadRelayerSigner();
+  } else {
+    return new ethers.Wallet(process.env.LOCAL_DEPLOY_PRIVATE_KEY!);
+  }
 }

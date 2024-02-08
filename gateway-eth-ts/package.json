@@ -10,7 +10,7 @@
     "lint": "eslint src/ --ext .ts",
     "build": "yarn compile && yarn doc",
     "pretest": "cd ../smart-contract && (NODE_ENV=test yarn local &) && sleep 10",
-    "test": "ts-mocha src/**/*.test.ts",
+    "test-local": "ts-mocha test/**/*.test.ts",
     "stop-network": "lsof -t -i:8545 | xargs kill",
     "copy-contracts": "cp -r ../smart-contract/build/contracts/* src/contracts/abi/ && cp -r ../smart-contract/typechain-types src/contracts"
   },
@@ -37,6 +37,7 @@
     "tslib": "^2.5.0"
   },
   "devDependencies": {
+    "@openzeppelin/defender-relay-client": "^1.54.1",
     "@types/chai": "^4.3.0",
     "@types/debug": "^4.1.7",
     "@types/eth-sig-util": "^2.1.1",
