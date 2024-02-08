@@ -1,5 +1,6 @@
 export { GatewayTs } from "./service/GatewayTs";
 export { GatewayTsForwarder } from "./service/GatewayTsForwarder";
+export { GatewayStaking } from "./service/GatewayStaking";
 export {
   TokenData,
   TokenState,

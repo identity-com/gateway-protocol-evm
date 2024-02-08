@@ -1,6 +1,6 @@
 import { Provider } from "@ethersproject/providers";
 import { GatewayStaking__factory, GatewayStaking as StakingType } from "../contracts/typechain-types";
-import { Wallet } from "ethers";
+import { ContractTransaction, Wallet, ethers } from "ethers";
 
 export class GatewayStaking {
 
@@ -23,9 +23,8 @@ export class GatewayStaking {
         return await this.gatewayStakingContract.hasMinimumGatekeeperStake(address);
     }
 
-    async depositStake(amount: bigint): Promise<BigInt> {
-        const result = await this.gatewayStakingContract.depositStake(amount);
-        return  BigInt(result.data);
+    async depositStake(amount: bigint): Promise<ContractTransaction> {
+        return await this.gatewayStakingContract.depositStake(amount, {gasLimit: 300000});
     }
 
     async depositStakeFor(amount: bigint, recipient: string): Promise<BigInt> {
