@@ -90,7 +90,8 @@ export class GatewayTsInternal<
     bitmask: BigNumberish = 0,
     charge: Charge = NULL_CHARGE
   ): Promise<O> {
-    const expirationTime = expiry.valueOf() as number > 0 ? getExpirationTime(expiry) : 0;
+    const expirationTime =
+      (expiry.valueOf() as number) > 0 ? getExpirationTime(expiry) : 0;
 
     return this.gatewayTokenContract.mint(
       owner,
@@ -119,7 +120,10 @@ export class GatewayTsInternal<
 
   async unfreeze(owner: string, network: bigint): Promise<O> {
     const tokenId = await this.checkedGetTokenId(owner, network);
-    return this.gatewayTokenContract.unfreeze(tokenId, {tokenSender: "", recipient: ""});
+    return this.gatewayTokenContract.unfreeze(tokenId, {
+      tokenSender: "",
+      recipient: "",
+    });
   }
 
   async refresh(
@@ -152,11 +156,9 @@ export class GatewayTsInternal<
   }
 
   async verify(owner: string, network: bigint): Promise<boolean> {
-    const result = await this.gatewayTokenContract["verifyToken(address,uint256)"](
-      owner,
-      network,
-      this.readOnlyOverrides
-    );
+    const result = await this.gatewayTokenContract[
+      "verifyToken(address,uint256)"
+    ](owner, network, this.readOnlyOverrides);
 
     return result.data != "0";
   }

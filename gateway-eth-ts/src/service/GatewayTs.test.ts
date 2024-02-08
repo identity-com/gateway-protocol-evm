@@ -38,7 +38,6 @@ describe.skip("GatewayTS", function () {
     );
   });
 
-
   it("should issue a token", async () => {
     await (await gateway.issue(sampleWalletAddress, gatekeeperNetwork)).wait();
 
