@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 import { GatewayStaking } from "../../src/service/GatewayStaking";
-import { BaseProvider, TransactionReceipt, getDefaultProvider } from "@ethersproject/providers";
-import { PopulatedTransaction, Wallet, ethers } from "ethers";
+import { BaseProvider } from "@ethersproject/providers";
+import { Wallet, ethers } from "ethers";
 import * as assert from "assert";
 import { gatekeeperOneTestnetWallet, BNB_TESTNET_CONTRACT_ADDRESSES, loadRelayerSigner } from "../utils";
 import { DummyBrokenERC20, DummyBrokenERC20__factory, GatewayStaking as GatewayStakingContract, GatewayStaking__factory } from "../../src/contracts/typechain-types";
