@@ -23,7 +23,7 @@ export declare type TokenData = {
 
 // List of the write operations on the GatewayToken contract that are exposed via this library
 export type WriteOps =
-    "mint"
+  | "mint"
   | "setExpiration"
   | "freeze"
   | "unfreeze"

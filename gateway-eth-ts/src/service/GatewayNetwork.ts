@@ -18,7 +18,7 @@ export enum GatekeeperStatus {
 }
  
 
-export class GatewayGatekeeper {
+export class GatewayNetworkClass {
   private gatewayNetworkContract: GatewayNetwork;
 
   readonly providerOrWallet: Provider | Wallet;
@@ -37,13 +37,6 @@ export class GatewayGatekeeper {
 
   async withdrawNetworkFees(networkName: string): Promise<ContractTransaction> {
     return await this.gatewayNetworkContract.withdrawNetworkFees(
-      networkName,
-      { gasLimit: 300000 }
-    );
-  }
-
-  async closeNetwork(networkName: string): Promise<ContractTransaction> {
-    return await this.gatewayNetworkContract.closeNetwork(
       networkName,
       { gasLimit: 300000 }
     );

@@ -1,9 +1,9 @@
 import * as dotenv from "dotenv";
 import * as assert from "assert";
 import { GatewayNetworkClass } from "../../src/service/GatewayNetwork";
-import { Wallet, ethers, utils } from "ethers";
+import { Wallet, ethers } from "ethers";
 import { BaseProvider } from "@ethersproject/providers";
-import { BNB_TESTNET_CONTRACT_ADDRESSES, ZERO_ADDRESS, gatekeeperOneTestnetWallet, initTestNetwork, testNetworkName } from "../utils";
+import { BNB_TESTNET_CONTRACT_ADDRESSES, ZERO_ADDRESS, gatekeeperOneTestnetWallet, gatekeeperTwoTestnetWallet, initTestNetwork, testNetworkName } from "../utils";
 import { GatewayNetwork, GatewayNetwork__factory } from "../../src/contracts/typechain-types";
 
 
@@ -23,7 +23,8 @@ describe.only("Gateway Network TS class", function () {
         provider = new ethers.providers.JsonRpcProvider("http://localhost:8545");
 
         gatekeeper = gatekeeperOneTestnetWallet.connect(provider);
-        randomWallet = Wallet.createRandom();
+
+        randomWallet = gatekeeperTwoTestnetWallet.connect(provider);
         
         gatewayNetworkClient = new GatewayNetworkClass(gatekeeper, BNB_TESTNET_CONTRACT_ADDRESSES.gatewayNetwork);
         gatewayNetworkContract = GatewayNetwork__factory.connect(BNB_TESTNET_CONTRACT_ADDRESSES.gatewayNetwork, gatekeeper);
@@ -59,27 +60,70 @@ describe.only("Gateway Network TS class", function () {
 
     describe("Network Primary Authority", async function () {
         it("should add gatekeeper to the default test network of the detault test network", async function () {
-
+            this.timeout(10000);
+            await gatewayNetworkClient.addGatekeeper(testNetworkName, randomWallet.address);
+            assert.equal(await gatewayNetworkClient.isGatekeeper(testNetworkName, randomWallet.address), true); 
         });
 
         it("should remove gatekeeper from the default test network of the detault test network", async function () {
-
+            this.timeout(10000);
+            await gatewayNetworkClient.removeGatekeeper(testNetworkName, randomWallet.address);
+            assert.equal(await gatewayNetworkClient.isGatekeeper(testNetworkName, randomWallet.address), false);
         });
 
-        it("should successfully update the primary authority of the detault test network", async function () {
+        it.skip("should successfully update the primary authority of the detault test network", async function () {
+            this.timeout(20000);
+            const resultOne = await gatewayNetworkClient.updatePrimaryAuthority(testNetworkName, randomWallet.address);
+            await resultOne.wait();
 
+            const randomWalletClient = gatewayNetworkClient = new GatewayNetworkClass(randomWallet, BNB_TESTNET_CONTRACT_ADDRESSES.gatewayNetwork);
+
+            const resultTwo = await randomWalletClient.claimPrimaryAuthority(testNetworkName);
+            await resultTwo.wait();
+
+            
+
+            // reset primary authority to original gatekeeper
+
+            const resultThree = await randomWalletClient.updatePrimaryAuthority(testNetworkName, gatekeeper.address);
+            await resultThree.wait();
+
+            const resultFour = await gatewayNetworkClient.claimPrimaryAuthority(testNetworkName);
+            await resultFour.wait();
         });
 
         it("should successfully update the networks default pass expiration time of the detault test network", async function () {
+            const newDefaultTime = 1000;
+            await gatewayNetworkClient.updatePassExpirationTimeConfig(testNetworkName, newDefaultTime);
 
+            const networkId = await gatewayNetworkClient.getNetworkId(testNetworkName);
+            const network = await gatewayNetworkClient.getNetwork(networkId.toString());
+
+            assert.equal(network.passExpireDurationInSeconds, newDefaultTime);
         });
 
-        it("should successfully update the networks fee % of the detault test network", async function () {
+        it.skip("should successfully update the networks fee % of the detault test network", async function () {
+            const newDefaultFee = 100;
+            const newFees = {issueFee: newDefaultFee, expireFee: newDefaultFee, refreshFee: newDefaultFee, freezeFee: newDefaultFee};
+            const result = await gatewayNetworkClient.updateFees(testNetworkName, newFees);
+            result.wait();
 
+            const networkId = await gatewayNetworkClient.getNetworkId(testNetworkName);
+            const network = await gatewayNetworkClient.getNetwork(networkId.toString());
+
+            assert.equal(network.networkFee.expireFee, newFees.expireFee);
+            assert.equal(network.networkFee.issueFee, newFees.issueFee);
+            assert.equal(network.networkFee.refreshFee, newFees.refreshFee);
+            assert.equal(network.networkFee.freezeFee, newFees.freezeFee);
         });
 
-        it("should successfully update the features of the detault test network", async function () {
+        it("should successfully update the features of the default test network", async function () {
+            const result = await gatewayNetworkClient.updateNetworkFeatures(testNetworkName, 1);
+            result.wait();
 
+            const networkId = await gatewayNetworkClient.getNetworkId(testNetworkName);
+            const network = await gatewayNetworkClient.getNetwork(networkId.toString());
+            assert.equal(network.networkFeatureMask, 1);
         });
     });
 

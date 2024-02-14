@@ -8,6 +8,7 @@ export const DEFAULT_MNEMONIC =
 
 export const deployerWallet = new Wallet("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80");
 export const gatekeeperOneTestnetWallet = new Wallet("0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d");
+export const gatekeeperTwoTestnetWallet = new Wallet("0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a");
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 export const testNetworkName = utils.formatBytes32String("testNetwork_client");
