@@ -3,13 +3,13 @@ import * as assert from "assert";
 import { GatewayGatekeeper } from "../../src/service/GatewayGatekeeper";
 import { GatewayNetwork__factory, GatewayNetwork, Gatekeeper, Gatekeeper__factory} from "../../src/contracts/typechain-types";
 import { BaseProvider } from "@ethersproject/providers";
-import { Wallet, ethers, utils } from "ethers";
-import { BNB_TESTNET_CONTRACT_ADDRESSES, ZERO_ADDRESS, gatekeeperOneTestnetWallet, loadRelayerSigner } from "../utils";
+import { Wallet, ethers } from "ethers";
+import { BNB_TESTNET_CONTRACT_ADDRESSES, gatekeeperOneTestnetWallet, initTestNetwork, testNetworkName } from "../utils";
 
 
 dotenv.config();
 
-describe.only("Gateway Gatekeeper TS class", function () {
+describe("Gateway Gatekeeper TS class", function () {
     let gatekeeperClient: GatewayGatekeeper;
     let gatekeeperContract: Gatekeeper;
     let gatewayNetworkContract: GatewayNetwork;
@@ -17,8 +17,6 @@ describe.only("Gateway Gatekeeper TS class", function () {
     let provider: BaseProvider;
     let gatekeeper: Wallet;
     let randomWallet: Wallet;
-
-    const testNetworkName = utils.formatBytes32String("testNetwork_client");
     
 
     before("Initialize gateway gatekeeper ts class", async function () {
@@ -33,8 +31,7 @@ describe.only("Gateway Gatekeeper TS class", function () {
         gatewayNetworkContract = GatewayNetwork__factory.connect(BNB_TESTNET_CONTRACT_ADDRESSES.gatewayNetwork, gatekeeper);
         gatekeeperContract = Gatekeeper__factory.connect(BNB_TESTNET_CONTRACT_ADDRESSES.gatekeeper, gatekeeper)
 
-        const addNewGatekeeperTx = await gatewayNetworkContract.connect(gatekeeper).claimPrimaryAuthority(testNetworkName, {gasLimit: 300000});
-        await addNewGatekeeperTx.wait();
+        await initTestNetwork(gatewayNetworkContract, gatekeeper);
     });
 
     it("should return the state of a valid gatekeeper", async function () {

@@ -1,5 +1,7 @@
-import { Wallet, ethers } from "ethers";
+import { Wallet, ethers, utils } from "ethers";
 import { DefenderRelayProvider, DefenderRelaySigner } from "@openzeppelin/defender-relay-client/lib/ethers";
+import { GatewayNetwork } from "../src/contracts/typechain-types";
+
 
 export const DEFAULT_MNEMONIC =
   "test test test test test test test test test test test junk";
@@ -8,6 +10,7 @@ export const deployerWallet = new Wallet("0xac0974bec39a17e36ba4a6b4d238ff944bac
 export const gatekeeperOneTestnetWallet = new Wallet("0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d");
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+export const testNetworkName = utils.formatBytes32String("testNetwork_client");
 
 interface GatewayProtocolContractAddresses {
     flagsStorage: string,
@@ -42,5 +45,15 @@ export async function getDeploymentSigner() {
     return await loadRelayerSigner();
   } else {
     return new ethers.Wallet(process.env.LOCAL_DEPLOY_PRIVATE_KEY!);
+  }
+}
+
+export async function initTestNetwork(gatewayNetworkContract: GatewayNetwork, gatekeeper: ethers.Signer) {
+  const networkId = await gatewayNetworkContract.getNetworkId(testNetworkName, {gasLimit: 300000});
+  const testNetwork = await gatewayNetworkContract.getNetwork(networkId, {gasLimit: 300000});
+
+  if(testNetwork.primaryAuthority != await gatekeeper.getAddress()) {
+    const claimAuthorityTx = await gatewayNetworkContract.connect(gatekeeper).claimPrimaryAuthority(testNetworkName, {gasLimit: 300000});
+    await claimAuthorityTx.wait();
   }
 }
