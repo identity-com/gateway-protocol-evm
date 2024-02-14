@@ -29,9 +29,9 @@ export const BNB_TESTNET_CONTRACT_ADDRESSES: GatewayProtocolContractAddresses = 
     gatewayToken: "0xf8cd7dE59eBB84faC87850c946d5feD2C8CbdBfA"
 }
 
-export async function loadRelayerSigner() {
+export async function loadRelayerSigner(provider?: ethers.providers.Provider) {
   const credentials = {apiKey: process.env.DEFENDER_RELAY_API_KEY!, apiSecret: process.env.DEFENDER_RELAY_SECRET!};
-  const provider = new DefenderRelayProvider(credentials);
+  provider = provider ? provider : new DefenderRelayProvider(credentials);
   return new DefenderRelaySigner(credentials, provider, { speed: 'fast' });
 }
 
