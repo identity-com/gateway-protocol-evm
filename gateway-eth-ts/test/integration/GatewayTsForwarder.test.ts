@@ -3,18 +3,18 @@ import {
   getDefaultProvider,
   TransactionReceipt,
 } from "@ethersproject/providers";
-import { TokenState } from "../utils";
+import { TokenState } from "../../src/utils";
 import * as assert from "assert";
 import * as dotenv from "dotenv";
-import { GatewayTs } from "./GatewayTs";
+import { GatewayTs } from "../../src/service/GatewayTs";
 import {
   deployerWallet,
   gatekeeperNetwork,
   gatekeeperWallet,
   TEST_GATEWAY_TOKEN_ADDRESS,
-} from "./testUtils";
+} from "../../src/service/testUtils";
 import { PopulatedTransaction } from "ethers/lib/ethers";
-import { GatewayTsForwarder } from "./GatewayTsForwarder";
+import { GatewayTsForwarder } from "../../src/service/GatewayTsForwarder";
 import { ethers, Wallet } from "ethers";
 import { BigNumber } from "ethers";
 import {
@@ -22,7 +22,7 @@ import {
   approveInternalERC20Charge,
   makeERC20Charge,
   makeWeiCharge,
-} from "../utils/charge";
+} from "../../src/utils/charge";
 
 dotenv.config();
 

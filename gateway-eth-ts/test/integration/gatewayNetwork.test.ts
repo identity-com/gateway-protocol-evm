@@ -9,7 +9,7 @@ import { GatewayNetwork, GatewayNetwork__factory } from "../../src/contracts/typ
 
 dotenv.config();
 
-describe.only("Gateway Network TS class", function () {
+describe("Gateway Network TS class", function () {
     let gatewayNetworkClient: GatewayNetworkClass;
     let gatewayNetworkContract: GatewayNetwork;
     

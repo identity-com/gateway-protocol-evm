@@ -26,11 +26,11 @@ export class GatewayTs extends GatewayTsInternal<
   constructor(
     // ethers.js requires a Wallet instead of Signer for the _signTypedData function, until v6
     providerOrWallet: Provider | Wallet,
-    defaultGatewayToken: string,
+    gatewayTokenContractAddress: string,
     options: Options = {}
   ) {
     const gatewayTokenContract = GatewayToken__factory.connect(
-      defaultGatewayToken,
+      gatewayTokenContractAddress,
       providerOrWallet
     );
     super(gatewayTokenContract, options);

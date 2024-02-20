@@ -3,6 +3,7 @@ import { GatewayToken } from "../contracts/typechain-types";
 
 export type Options = Overrides & {
   tolerateMultipleTokens?: boolean;
+  gasLimit?: 300000
 };
 
 export enum TokenState {
@@ -54,11 +55,16 @@ export type MappedWriteOperation<O> = {
 export type ReadOnlyOps =
   | "getToken"
   | "verifyToken(address,uint256)"
-  | "getTokenIdsByOwnerAndNetwork";
+  | "getTokenIdsByOwnerAndNetwork"
+  | "getTokenIdsByOwnerAndNetwork"
+  | "getExpiration"
+  | "getTokenBitmask";
 export const readOnlyOpNames = [
   "getToken",
   "verifyToken(address,uint256)",
   "getTokenIdsByOwnerAndNetwork",
+  "getExpiration",
+  "getTokenBitmask"
 ];
 
 // A GatewayToken contract instance with the read operations exposed

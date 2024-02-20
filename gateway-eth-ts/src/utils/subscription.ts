@@ -17,7 +17,7 @@ export const onGatewayTokenChange = (
       const latestBlockNumber = await provider.getBlockNumber();
       if (block !== latestBlockNumber) {
         block = latestBlockNumber;
-        const token = await gateway.getToken(owner, network);
+        const token = await gateway.getFirstTokenOnNetwork(owner, network);
         callback(token);
       }
     })();

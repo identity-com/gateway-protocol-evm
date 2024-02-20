@@ -17,7 +17,7 @@ import {
 import { mapObjIndexed, pick } from "ramda";
 import { signMetaTxRequest } from "../utils/metatx";
 import { Provider } from "@ethersproject/providers";
-import { Charge, ChargeType } from "../utils/charge";
+import { Charge, ChargeParties, ChargeType } from "../utils/charge";
 
 // This is the default gas limit used by the GatewayTs forwarder
 // if not overridden.
@@ -129,11 +129,12 @@ export class GatewayTsForwarder extends GatewayTsInternal<
   async issue(
     owner: string,
     network: bigint,
-    expiry?: BigNumberish,
-    bitmask?: BigNumberish,
+    expiry: BigNumberish = 0,
+    bitmask: BigNumberish = 0,
+    partiesInCharge: ChargeParties,
     charge?: Charge
   ): Promise<PopulatedTransaction> {
-    const tx = await super.issue(owner, network, expiry, bitmask, charge);
+    const tx = await super.issue(owner, network, expiry, bitmask, partiesInCharge, charge);
 
     if (charge?.chargeType === ChargeType.ETH) {
       tx.value = charge.value;
@@ -144,10 +145,11 @@ export class GatewayTsForwarder extends GatewayTsInternal<
   async refresh(
     owner: string,
     network: bigint,
+    partiesInCharge: ChargeParties,
     expiry?: number | BigNumber,
     charge?: Charge
   ): Promise<PopulatedTransaction> {
-    const tx = await super.refresh(owner, network, expiry, charge);
+    const tx = await super.refresh(owner, network, partiesInCharge, expiry, charge);
 
     if (charge?.chargeType === ChargeType.ETH) {
       tx.value = charge.value;
