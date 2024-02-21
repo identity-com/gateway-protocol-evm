@@ -7,12 +7,6 @@ import { TokenState } from "../../src/utils";
 import * as assert from "assert";
 import * as dotenv from "dotenv";
 import { GatewayTs } from "../../src/service/GatewayTs";
-import {
-  deployerWallet,
-  gatekeeperNetwork,
-  gatekeeperWallet,
-  TEST_GATEWAY_TOKEN_ADDRESS,
-} from "../../src/service/testUtils";
 import { PopulatedTransaction } from "ethers/lib/ethers";
 import { GatewayTsForwarder } from "../../src/service/GatewayTsForwarder";
 import { ethers, Wallet } from "ethers";
@@ -23,15 +17,20 @@ import {
   makeERC20Charge,
   makeWeiCharge,
 } from "../../src/utils/charge";
+import { BNB_TESTNET_CONTRACT_ADDRESSES, deployerWallet, gatekeeperOneTestnetWallet, initTestNetwork, testNetworkName } from "../utils";
+import { GatewayNetwork, GatewayNetwork__factory } from "../../src/contracts/typechain-types";
 
 dotenv.config();
 
-describe.skip("GatewayTS Forwarder", function () {
+describe.only("GatewayTS Forwarder", function () {
   let gateway: GatewayTsForwarder;
   let provider: BaseProvider;
+  let gatewayNetworkContract: GatewayNetwork;
 
   let gatekeeper: Wallet;
   let relayer: Wallet;
+
+  let testNetworkId: bigint;
 
   const sampleWalletAddress = Wallet.createRandom().address;
 
@@ -99,37 +98,43 @@ describe.skip("GatewayTS Forwarder", function () {
     return contract.balanceOf(address);
   };
 
-  before("Initialize GatewayTS class", function () {
-    this.timeout(20_000);
+  before("Initialize GatewayTS class", async function () {
+    this.timeout(20000);
 
     provider = getDefaultProvider("http://localhost:8545");
 
     // use the deployer account here as the relayer, as they are guaranteed to be funded by hardhat on localnet startup
-    relayer = deployerWallet(provider);
-    gatekeeper = gatekeeperWallet(provider);
+    relayer = gatekeeperOneTestnetWallet.connect(provider);
+    gatekeeper = gatekeeperOneTestnetWallet.connect(provider);
+
+    gatewayNetworkContract = GatewayNetwork__factory.connect(BNB_TESTNET_CONTRACT_ADDRESSES.gatewayNetwork, gatekeeper);
+
+    await initTestNetwork(gatewayNetworkContract, gatekeeper);
+
+    testNetworkId = (await gatewayNetworkContract.getNetworkId(testNetworkName)).toBigInt();
 
     console.log("Gatekeeper:", gatekeeper.address);
     console.log("Relayer:", relayer.address);
 
     gateway = new GatewayTs(
       gatekeeper,
-      TEST_GATEWAY_TOKEN_ADDRESS.gatewayToken
-    ).forward(TEST_GATEWAY_TOKEN_ADDRESS.forwarder);
+      BNB_TESTNET_CONTRACT_ADDRESSES.gatewayToken
+    ).forward(BNB_TESTNET_CONTRACT_ADDRESSES.forwarder);
   });
 
-  it("should issue a token", async () => {
+  it.only("should issue a token", async () => {
     await relaySerialized(() =>
-      gateway.issue(sampleWalletAddress, gatekeeperNetwork)
+      gateway.issue(sampleWalletAddress, testNetworkId, 0, 0, {feeSender: sampleWalletAddress, feeRecipient: gatekeeper.address})
     );
 
-    const token = await gateway.getToken(
+    const token = await gateway.getFirstTokenOnNetwork(
       sampleWalletAddress,
-      gatekeeperNetwork
+      testNetworkId
     );
 
     assert.equal(token.owner, sampleWalletAddress);
     assert.equal(token.state, TokenState.ACTIVE);
-  });
+  }).timeout(10000);
 
   it("should issue a token with an eth charge", async () => {
     const gatekeeperBalanceBefore = await gatekeeper.getBalance();
