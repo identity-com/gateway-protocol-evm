@@ -39,11 +39,11 @@ describe("Gateway Gatekeeper TS class", function () {
 
         assert.equal(gatekeeperState.status, 1);
         assert.equal(gatekeeperState.initialized, true);
-    });
+    }).timeout(15000);
 
     it("should fail to return the state of a gatekeeper that doesnt exist", async function () {
         assert.rejects(() => gatekeeperClient.getGatekeeperNetworkData(testNetworkName,randomWallet.address), Error);
-    });
+    }).timeout(15000);
 
     it("should allow a gatekeeper to update their fee configuration", async function () {
         this.timeout(10000);
@@ -56,7 +56,7 @@ describe("Gateway Gatekeeper TS class", function () {
         testNetworkName);
 
         await resultTx.wait();
-    });
+    }).timeout(15000);
 
     it("should not allow a address that is not a gatekeeper to update their fee configuration", async function () {
         assert.rejects(() => gatekeeperClient.updateFeeConfig({

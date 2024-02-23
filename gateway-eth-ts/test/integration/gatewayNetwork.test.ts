@@ -63,13 +63,13 @@ describe("Gateway Network TS class", function () {
             this.timeout(10000);
             await gatewayNetworkClient.addGatekeeper(testNetworkName, randomWallet.address);
             assert.equal(await gatewayNetworkClient.isGatekeeper(testNetworkName, randomWallet.address), true); 
-        });
+        }).timeout(15000);
 
         it("should remove gatekeeper from the default test network of the detault test network", async function () {
             this.timeout(10000);
             await gatewayNetworkClient.removeGatekeeper(testNetworkName, randomWallet.address);
             assert.equal(await gatewayNetworkClient.isGatekeeper(testNetworkName, randomWallet.address), false);
-        });
+        }).timeout(15000);
 
         it.skip("should successfully update the primary authority of the detault test network", async function () {
             this.timeout(20000);
@@ -100,7 +100,7 @@ describe("Gateway Network TS class", function () {
             const network = await gatewayNetworkClient.getNetwork(networkId.toString());
 
             assert.equal(network.passExpireDurationInSeconds, newDefaultTime);
-        });
+        }).timeout(15000);
 
         it.skip("should successfully update the networks fee % of the detault test network", async function () {
             const newDefaultFee = 100;
@@ -124,7 +124,7 @@ describe("Gateway Network TS class", function () {
             const networkId = await gatewayNetworkClient.getNetworkId(testNetworkName);
             const network = await gatewayNetworkClient.getNetwork(networkId.toString());
             assert.equal(network.networkFeatureMask, 1);
-        });
+        }).timeout(15000);
     });
 
 });

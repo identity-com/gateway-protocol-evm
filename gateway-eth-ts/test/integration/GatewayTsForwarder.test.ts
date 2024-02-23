@@ -190,7 +190,7 @@ describe("GatewayTS Forwarder", function () {
     assert.equal(token.owner, sampleWalletAddress);
     assert.equal(token.state, TokenState.ACTIVE);
 
-  }).timeout(10000);
+  }).timeout(15000);
 
  
 

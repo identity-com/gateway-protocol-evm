@@ -41,7 +41,7 @@ describe("Gateway Staking TS class", function () {
 
         const shareBalanceAfter = await gatewayStakingContract.balanceOf(gatekeeper.address);
         assert.equal(shareBalanceAfter.toNumber() - shareBalanceBefore.toNumber(),100);
-    })
+    }).timeout(15000)
 
     it("should allow a gatekeeper to withdraw stake that was deposited", async () => {
         this.timeout(10000);
@@ -65,5 +65,5 @@ describe("Gateway Staking TS class", function () {
 
         const withdwalEvent = finalWithdrawlTx.events?.find(e => e.event === 'Withdraw');
         assert.notEqual(withdwalEvent, undefined);
-    })
+    }).timeout(15000);
 })

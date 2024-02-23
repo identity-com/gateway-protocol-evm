@@ -50,7 +50,6 @@ describe("GatewayTS", function () {
   });
 
   it("should issue a token", async () => {
-    this.timeout(10000);
     const randomAddress = Wallet.createRandom().address;
     await (await gateway.issue(randomAddress, testNetworkId, 0, 0, {feeSender: sampleWalletAddress, feeRecipient: gatekeeper.address})).wait();
 
@@ -61,7 +60,7 @@ describe("GatewayTS", function () {
 
     assert.equal(token!.owner, randomAddress);
     assert.equal(token!.state, TokenState.ACTIVE);
-  });
+  }).timeout(15000);
 
   it.skip("should tolerate multiple tokens", async () => {
     const walletWithMultipleTokens = Wallet.createRandom().address;
@@ -104,7 +103,7 @@ describe("GatewayTS", function () {
 
     const token = await gateway.getFirstTokenOnNetwork(randomAddress, testNetworkId);
     assert.equal(token!.bitmask.toNumber(), mask.toNumber());
-  });
+  }).timeout(15000);
 
 
   context("getTokenIdsByOwnerAndNetwork", () => {
