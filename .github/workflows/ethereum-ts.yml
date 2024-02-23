@@ -48,7 +48,7 @@ jobs:
         run: (cd ../smart-contract && yarn && yarn build)
 
       - name: Run Anvil Node
-      run: anvil --fork-url ${{ env.BNB_TESTNET_RPC_URL }} &
+        run: anvil --fork-url ${{ env.BNB_TESTNET_RPC_URL }} &
 
       - name: Run tests
         run: yarn test-local
