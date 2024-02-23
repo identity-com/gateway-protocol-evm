@@ -34,7 +34,7 @@ export class GatewayTsInternal<
   }
 
   private get overrides(): Overrides {
-    return omit(["tolerateMultipleTokens"], this.options);
+    return  { ...omit(["tolerateMultipleTokens"], this.options), gasLimit: 600000};
   }
 
   /**
@@ -42,7 +42,7 @@ export class GatewayTsInternal<
    * @param charge
    * @private
    */
-  private payableOverrides(charge: Charge): PayableOverrides {
+  private payableOverrides(charge: Partial<Charge>): PayableOverrides {
     const value =
       charge.chargeType === ChargeType.ETH ? charge.value : undefined;
     return {
@@ -89,7 +89,7 @@ export class GatewayTsInternal<
     expiry: BigNumberish = 0,
     bitmask: BigNumberish = 0,
     partiesInCharge: ChargeParties,
-    chargeType?: Charge
+    chargeType?: Partial<Charge>
   ): Promise<O> {
     const expirationTime = expiry.valueOf() as number;
 

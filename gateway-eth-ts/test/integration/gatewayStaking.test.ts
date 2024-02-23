@@ -25,7 +25,6 @@ describe("Gateway Staking TS class", function () {
         dummyERC20 = DummyBrokenERC20__factory.connect(BNB_TESTNET_CONTRACT_ADDRESSES.erc20, provider);
         gatewayStakingContract = GatewayStaking__factory.connect(BNB_TESTNET_CONTRACT_ADDRESSES.gatewayStaking, provider);
 
-        const singner = await loadRelayerSigner();
     });
 
     it("should allow a gatekeeper to stake the correct ERC20 token", async function () {

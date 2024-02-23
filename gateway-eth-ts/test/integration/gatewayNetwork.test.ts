@@ -127,8 +127,4 @@ describe("Gateway Network TS class", function () {
         });
     });
 
-
-    describe("Fees", async function () {
-
-    });
 });

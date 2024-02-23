@@ -16,6 +16,8 @@ export enum GatekeeperStatus {
     ACTIVE,
     FROZEN
 }
+
+const DEFAULT_GAS_LIMIT = 500_000;
  
 
 export class GatewayNetworkClass {
@@ -38,7 +40,7 @@ export class GatewayNetworkClass {
   async withdrawNetworkFees(networkName: string): Promise<ContractTransaction> {
     return await this.gatewayNetworkContract.withdrawNetworkFees(
       networkName,
-      { gasLimit: 300000 }
+      { gasLimit: DEFAULT_GAS_LIMIT }
     );
   }
 
@@ -46,7 +48,7 @@ export class GatewayNetworkClass {
     return await this.gatewayNetworkContract.addGatekeeper(
         newGatekeeperAddress,
       networkName,
-      { gasLimit: 300000 }
+      { gasLimit: DEFAULT_GAS_LIMIT }
     );
   }
 
@@ -54,7 +56,7 @@ export class GatewayNetworkClass {
     return await this.gatewayNetworkContract.removeGatekeeper(
       gatekeeperAddress,
       networkName,
-      { gasLimit: 300000 }
+      { gasLimit: DEFAULT_GAS_LIMIT }
     );
   }
 
@@ -62,14 +64,14 @@ export class GatewayNetworkClass {
     return await this.gatewayNetworkContract.updatePrimaryAuthority(
       newPrimaryAuthority,
       networkName,
-      { gasLimit: 300000 }
+      { gasLimit: DEFAULT_GAS_LIMIT }
     );
   }
 
   async claimPrimaryAuthority(networkName: string): Promise<ContractTransaction> {
     return await this.gatewayNetworkContract.claimPrimaryAuthority(
       networkName,
-      { gasLimit: 300000 }
+      { gasLimit: DEFAULT_GAS_LIMIT }
     );
   }
 
@@ -78,7 +80,7 @@ export class GatewayNetworkClass {
       gatekeeperAddress,
       networkName,
       newGatekeeperStatusConfig,
-      { gasLimit: 300000 }
+      { gasLimit: DEFAULT_GAS_LIMIT }
     );
   }
 
@@ -86,7 +88,7 @@ export class GatewayNetworkClass {
     return await this.gatewayNetworkContract.updatePassExpirationTime(
       newExpirationTimeInSeconds,
       networkName,
-      { gasLimit: 300000 }
+      { gasLimit: DEFAULT_GAS_LIMIT }
     );
   }
 
@@ -94,7 +96,7 @@ export class GatewayNetworkClass {
     return await this.gatewayNetworkContract.updateNetworkFeatures(
         newFeatureMask,
       networkName,
-      { gasLimit: 300000 }
+      { gasLimit: DEFAULT_GAS_LIMIT }
     );
   }
 
@@ -102,7 +104,7 @@ export class GatewayNetworkClass {
     return await this.gatewayNetworkContract.updateFees(
         newNetworkFeeConfig,
         networkName,
-      { gasLimit: 300000 }
+      { gasLimit: DEFAULT_GAS_LIMIT }
     );
   }
 
@@ -112,7 +114,7 @@ export class GatewayNetworkClass {
     return await this.gatewayNetworkContract.networkHasFeature(
         networkName,
         networkFeature,
-      { gasLimit: 300000 }
+      { gasLimit: DEFAULT_GAS_LIMIT }
     );
   }
 
@@ -120,42 +122,42 @@ export class GatewayNetworkClass {
     return await this.gatewayNetworkContract.isGateKeeper(
       networkName,
       gatekeeperAddress,
-      { gasLimit: 300000 }
+      { gasLimit: DEFAULT_GAS_LIMIT }
     );
   }
 
   async getNetworkId(networkName: string): Promise<BigNumberish> {
     return await this.gatewayNetworkContract.getNetworkId(
       networkName,
-      { gasLimit: 300000 }
+      { gasLimit: DEFAULT_GAS_LIMIT }
     );
   }
 
   async getNetwork(networkId: string): Promise<IGatewayNetwork.GatekeeperNetworkDataStruct> {
     return await this.gatewayNetworkContract.getNetwork(
         networkId,
-      { gasLimit: 300000 }
+      { gasLimit: DEFAULT_GAS_LIMIT }
     );
   }
 
   async doesNetworkExist(networkId: string): Promise<boolean> {
     return await this.gatewayNetworkContract.doesNetworkExist(
         networkId,
-      { gasLimit: 300000 }
+      { gasLimit: DEFAULT_GAS_LIMIT }
     );
   }
 
   async getSupportedFeeTokenAddress(networkName: string): Promise<string> {
     return await this.gatewayNetworkContract.getSupportedToken(
         networkName,
-      { gasLimit: 300000 }
+      { gasLimit: DEFAULT_GAS_LIMIT }
     );
   }
 
   async getGatekeepersOnNetwork(networkName: string): Promise<string[]> {
     return await this.gatewayNetworkContract.getGatekeepersOnNetwork(
         networkName,
-      { gasLimit: 300000 }
+      { gasLimit: DEFAULT_GAS_LIMIT }
     );
   }
 

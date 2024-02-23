@@ -17,7 +17,7 @@ dotenv.config();
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-describe.only("GatewayTS", function () {
+describe("GatewayTS", function () {
   this.timeout(5_000);
   let gateway: GatewayTs;
   let provider: BaseProvider;

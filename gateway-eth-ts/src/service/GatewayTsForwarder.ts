@@ -13,6 +13,7 @@ import {
   WriteOps,
   ReadOnlyOperation,
   readOnlyOpNames,
+  Options,
 } from "../utils/types";
 import { mapObjIndexed, pick } from "ramda";
 import { signMetaTxRequest } from "../utils/metatx";
@@ -100,7 +101,7 @@ export class GatewayTsForwarder extends GatewayTsInternal<
     providerOrWallet: Provider | Wallet,
     gatewayTokenContract: GatewayToken,
     forwarderContract: IForwarder,
-    options: ForwarderOptions
+    options: Options
   ) {
     const wallet =
       "_signTypedData" in providerOrWallet ? providerOrWallet : undefined;
@@ -132,7 +133,7 @@ export class GatewayTsForwarder extends GatewayTsInternal<
     expiry: BigNumberish = 0,
     bitmask: BigNumberish = 0,
     partiesInCharge: ChargeParties,
-    charge?: Charge
+    charge?: Partial<Charge>
   ): Promise<PopulatedTransaction> {
     const tx = await super.issue(owner, network, expiry, bitmask, partiesInCharge, charge);
 

@@ -40,7 +40,7 @@ export class GatewayTs extends GatewayTsInternal<
   }
 
   private get forwarderOptions(): ForwarderOptions {
-    const gasLimit = this.options.gasLimit;
+    const gasLimit = this.options.gasLimit ? this.options.gasLimit : 400000;
     if (gasLimit && typeof gasLimit !== "number") {
       throw new Error("gasLimit must be a number to use the forwarder");
     }
@@ -57,7 +57,7 @@ export class GatewayTs extends GatewayTsInternal<
       this.providerOrWallet,
       this.gatewayTokenContract,
       forwarderContract,
-      this.forwarderOptions
+      this.forwarderOptions as Options
     );
   }
 
