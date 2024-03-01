@@ -16,6 +16,7 @@ import {
 } from "../utils";
 import { GatewayTsTransaction } from "./GatewayTsTransaction";
 import { Options } from "../utils/types";
+import { DEFAULT_GAS_LIMIT } from "../utils/constants";
 
 export class GatewayTs extends GatewayTsInternal<
   GatewayToken,
@@ -40,7 +41,7 @@ export class GatewayTs extends GatewayTsInternal<
   }
 
   private get forwarderOptions(): ForwarderOptions {
-    const gasLimit = this.options.gasLimit ? this.options.gasLimit : 400000;
+    const gasLimit = this.options.gasLimit ? this.options.gasLimit : DEFAULT_GAS_LIMIT;
     if (gasLimit && typeof gasLimit !== "number") {
       throw new Error("gasLimit must be a number to use the forwarder");
     }

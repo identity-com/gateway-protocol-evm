@@ -8,7 +8,7 @@ import {
   TokenData,
 } from "../utils/types";
 import { Charge, ChargeParties, ChargeType, NULL_CHARGE } from "../utils/charge";
-import { NULL_ADDRESS } from "../utils/constants";
+import { DEFAULT_GAS_LIMIT, NULL_ADDRESS } from "../utils/constants";
 import { omit } from "ramda";
 import { PayableOverrides } from "@ethersproject/contracts";
 
@@ -34,7 +34,7 @@ export class GatewayTsInternal<
   }
 
   private get overrides(): Overrides {
-    return  { ...omit(["tolerateMultipleTokens"], this.options), gasLimit: 600000};
+    return  { ...omit(["tolerateMultipleTokens"], this.options), gasLimit: DEFAULT_GAS_LIMIT};
   }
 
   /**

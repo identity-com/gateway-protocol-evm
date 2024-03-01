@@ -4,6 +4,7 @@ import {
   GatewayStaking as StakingType,
 } from "../contracts/typechain-types";
 import { ContractTransaction, Wallet, ethers } from "ethers";
+import { DEFAULT_GAS_LIMIT } from "../utils/constants";
 
 export class GatewayStaking {
   private gatewayStakingContract: StakingType;
@@ -24,13 +25,13 @@ export class GatewayStaking {
   async hasMinimumGatekeeperStake(address: string): Promise<boolean> {
     return await this.gatewayStakingContract.hasMinimumGatekeeperStake(
       address,
-      { gasLimit: 300000 }
+      { gasLimit: DEFAULT_GAS_LIMIT }
     );
   }
 
   async depositStake(amount: bigint): Promise<ContractTransaction> {
     return await this.gatewayStakingContract.depositStake(amount, {
-      gasLimit: 300000,
+      gasLimit: DEFAULT_GAS_LIMIT,
     });
   }
 
@@ -43,7 +44,7 @@ export class GatewayStaking {
 
   async withdrawStake(amount: bigint): Promise<ContractTransaction> {
     return await this.gatewayStakingContract.withdrawStake(amount, {
-      gasLimit: 300000,
+      gasLimit: DEFAULT_GAS_LIMIT,
     });
   }
 
@@ -54,7 +55,8 @@ export class GatewayStaking {
     return await this.gatewayStakingContract.redeem(
       amount,
       stakeOwner,
-      stakeOwner
+      stakeOwner,
+      { gasLimit: DEFAULT_GAS_LIMIT }
     );
   }
 }

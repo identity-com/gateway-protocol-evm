@@ -5,6 +5,7 @@ import {
   IGatewayGatekeeper
 } from "../contracts/typechain-types";
 import { ContractTransaction, Wallet, ethers } from "ethers";
+import { DEFAULT_GAS_LIMIT } from "../utils/constants";
 
 export class GatewayGatekeeper {
   private gatewayGatekeeperContract: GatekeeperType;
@@ -26,7 +27,7 @@ export class GatewayGatekeeper {
     return await this.gatewayGatekeeperContract.getGatekeeperNetworkData(
         networkName,
         gatekeeperAddress,
-      { gasLimit: 300000 }
+      { gasLimit: DEFAULT_GAS_LIMIT }
     );
   }
 
@@ -34,6 +35,6 @@ export class GatewayGatekeeper {
     return await this.gatewayGatekeeperContract.updateFees(
       newFeeConfig,
       networkName,
-      { gasLimit: 300000 });
+      { gasLimit: DEFAULT_GAS_LIMIT });
   }
 }

@@ -6,6 +6,7 @@ import {
   IGatewayNetwork
 } from "../contracts/typechain-types";
 import { BigNumberish, ContractTransaction, Wallet, ethers } from "ethers";
+import { DEFAULT_GAS_LIMIT } from "../utils/constants";
 
 export enum GatewayNetworkFeatures {
   REMOVE_GATEKEEPER_INVALIDATES_TOKENS
@@ -17,7 +18,6 @@ export enum GatekeeperStatus {
     FROZEN
 }
 
-const DEFAULT_GAS_LIMIT = 500_000;
  
 
 export class GatewayNetworkClass {
