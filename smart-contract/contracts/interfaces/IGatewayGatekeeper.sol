@@ -31,7 +31,7 @@ abstract contract  IGatewayGatekeeper {
      *@dev A mapping of the primaryAuthority of a gatekeeper, of a mapping of the gatekeepers configuration by networkId
      */
 
-    uint256 public FEE_CONFIG_DELAY_TIME = 7 days;
+     uint256 public immutable FEE_CONFIG_DELAY_TIME = 7 days;
 
     mapping(address => mapping(bytes32 => GatekeeperNetworkData)) internal _gatekeeperStates;
 

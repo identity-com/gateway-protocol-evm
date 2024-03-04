@@ -1,4 +1,4 @@
-import { ethers } from 'hardhat';
+import { ethers, upgrades } from 'hardhat';
 import { expect } from 'chai';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { time } from "@nomicfoundation/hardhat-network-helpers";
@@ -54,12 +54,18 @@ describe('Gatekeeper', () => {
         const gatewayStakingFactory = await new GatewayStaking__factory(deployer);
         const erc20Factory = await new DummyERC20__factory(deployer);
 
-        gatekeeperContract = await gatekeeperContractFactory.deploy();
+        gatekeeperContract = await upgrades.deployProxy(gatekeeperContractFactory, [deployer.address], { kind: 'uups', unsafeAllow: ['state-variable-immutable']}) as Gatekeeper;
 
         dummyErc20Contract = await erc20Factory.deploy('DummyToken', 'DT', 10000000000, deployer.address);
         await dummyErc20Contract.deployed();
 
-        gatewayStakingContract = await gatewayStakingFactory.deploy(dummyErc20Contract.address, 'GatewayProtocolShares', 'GPS');
+        gatewayStakingContract = await upgrades.deployProxy(gatewayStakingFactory, [deployer.address], 
+            { 
+                kind: 'uups', 
+                constructorArgs: [dummyErc20Contract.address, 'GatewayProtocolShares', 'GPS'] ,
+                unsafeAllow: ['state-variable-immutable', 'constructor']
+            }) as GatewayStaking;
+
         await gatewayStakingContract.deployed();
 
         gatekeeperNetworkContract = await gatewayNetworkFactory.deploy(gatekeeperContract.address, gatewayStakingContract.address);

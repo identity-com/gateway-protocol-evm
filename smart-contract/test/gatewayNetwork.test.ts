@@ -58,7 +58,7 @@ describe('GatewayNetwork', () => {
         const gatewayStakingFactory = await new GatewayStaking__factory(deployer);
         const dummyERC20Factory = await new DummyERC20__factory(deployer);
 
-        gatekeeperContract = await gatekeeperContractFactory.deploy();
+        gatekeeperContract = await upgrades.deployProxy(gatekeeperContractFactory, [deployer.address], { kind: 'uups', unsafeAllow: ['state-variable-immutable']}) as Gatekeeper;
         await gatekeeperContract.deployed();
 
         dummyErc20Contract = await dummyERC20Factory.deploy('DummyToken', 'DT', parseEther(`1000`), deployer.address);

@@ -118,7 +118,7 @@ describe('GatewayToken', async () => {
     forwarder = await forwarderFactory.deploy(100);
     await forwarder.deployed();
 
-    gatekeeperContract = await gatekeeperContractFactory.deploy();
+    gatekeeperContract = await upgrades.deployProxy(gatekeeperContractFactory, [identityCom.address], { kind: 'uups', unsafeAllow: ['state-variable-immutable']}) as Gatekeeper;
     await gatekeeperContract.deployed();
 
     dummyErc20Contract = await dummyERC20Factory.deploy('DummyToken', 'DT', 10000000000, identityCom.address);
