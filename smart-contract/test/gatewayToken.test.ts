@@ -124,7 +124,12 @@ describe('GatewayToken', async () => {
     dummyErc20Contract = await dummyERC20Factory.deploy('DummyToken', 'DT', 10000000000, identityCom.address);
         await dummyErc20Contract.deployed();
 
-    gatewayStakingContract = await gatewayStakingFactory.deploy(dummyErc20Contract.address, 'GatewayProtocolShares', 'GPS');
+    gatewayStakingContract = await upgrades.deployProxy(gatewayStakingFactory, [identityCom.address], 
+      {
+        kind: 'uups', 
+        constructorArgs: [dummyErc20Contract.address, 'GatewayProtocolShares', 'GPS'],
+        unsafeAllow: ['state-variable-immutable', 'constructor']
+      }) as GatewayStaking;
     await gatewayStakingContract.deployed();
 
     flagsStorage = await upgrades.deployProxy(flagsStorageFactory, [identityCom.address], { kind: 'uups' });
