@@ -13,20 +13,13 @@ import {
   WriteOps,
   ReadOnlyOperation,
   readOnlyOpNames,
+  Options,
 } from "../utils/types";
 import { mapObjIndexed, pick } from "ramda";
 import { signMetaTxRequest } from "../utils/metatx";
 import { Provider } from "@ethersproject/providers";
-import { Charge, ChargeType } from "../utils/charge";
-
-// This is the default gas limit used by the GatewayTs forwarder
-// if not overridden.
-// The Forwarder requires a gas limit to be set, as it is what is passed into the
-// inner transaction and signed. Without this, the forwarder would not know
-// how much gas to send to the recipient smart contract.
-// This gas limit will be ignored if the populatedTransaction includes its own gasLimit,
-// so it can be overridden for each transaction if necessary.
-const DEFAULT_GAS_LIMIT = 500_000;
+import { Charge, ChargeParties, ChargeType } from "../utils/charge";
+import { DEFAULT_GAS_LIMIT } from "../utils/constants";
 
 export type ForwarderOptions = Omit<Overrides, "gasLimit"> & {
   gasLimit?: BigNumber | number;
@@ -100,7 +93,7 @@ export class GatewayTsForwarder extends GatewayTsInternal<
     providerOrWallet: Provider | Wallet,
     gatewayTokenContract: GatewayToken,
     forwarderContract: IForwarder,
-    options: ForwarderOptions
+    options: Options
   ) {
     const wallet =
       "_signTypedData" in providerOrWallet ? providerOrWallet : undefined;
@@ -129,11 +122,12 @@ export class GatewayTsForwarder extends GatewayTsInternal<
   async issue(
     owner: string,
     network: bigint,
-    expiry?: BigNumberish,
-    bitmask?: BigNumberish,
-    charge?: Charge
+    expiry: BigNumberish = 0,
+    bitmask: BigNumberish = 0,
+    partiesInCharge: ChargeParties,
+    charge?: Partial<Charge>
   ): Promise<PopulatedTransaction> {
-    const tx = await super.issue(owner, network, expiry, bitmask, charge);
+    const tx = await super.issue(owner, network, expiry, bitmask, partiesInCharge, charge);
 
     if (charge?.chargeType === ChargeType.ETH) {
       tx.value = charge.value;
@@ -144,10 +138,11 @@ export class GatewayTsForwarder extends GatewayTsInternal<
   async refresh(
     owner: string,
     network: bigint,
+    partiesInCharge: ChargeParties,
     expiry?: number | BigNumber,
     charge?: Charge
   ): Promise<PopulatedTransaction> {
-    const tx = await super.refresh(owner, network, expiry, charge);
+    const tx = await super.refresh(owner, network, partiesInCharge, expiry, charge);
 
     if (charge?.chargeType === ChargeType.ETH) {
       tx.value = charge.value;

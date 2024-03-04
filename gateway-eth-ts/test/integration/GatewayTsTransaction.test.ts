@@ -3,16 +3,16 @@ import {
   getDefaultProvider,
   TransactionReceipt,
 } from "@ethersproject/providers";
-import { TokenState } from "../utils";
+import { TokenState } from "../../src/utils";
 import * as assert from "assert";
 import * as dotenv from "dotenv";
-import { GatewayTs } from "./GatewayTs";
+import { GatewayTs } from "../../src/service/GatewayTs";
 import {
   gatekeeperNetwork,
   gatekeeperWallet,
   TEST_GATEWAY_TOKEN_ADDRESS,
-} from "./testUtils";
-import { GatewayTsForwarder } from "./GatewayTsForwarder";
+} from "../../src/service/testUtils";
+import { GatewayTsForwarder } from "../../src/service/GatewayTsForwarder";
 import { Wallet } from "ethers";
 
 dotenv.config();

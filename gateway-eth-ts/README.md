@@ -103,3 +103,7 @@ await gateway.issue(wallet, gatekeeperNetwork, undefined, undefined, charge)
 ```
 
 );
+
+## Running Test Suite
+
+We currently use a local node (either foundry or hardhat) with a fork from the bsc testnet contract deployments for our test. To run the test suite locally you must specify the `$RPC_URL` enviornment variable to a bsc testnet node.

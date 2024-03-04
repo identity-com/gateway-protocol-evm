@@ -1,5 +1,8 @@
 export { GatewayTs } from "./service/GatewayTs";
 export { GatewayTsForwarder } from "./service/GatewayTsForwarder";
+export { GatewayStaking } from "./service/GatewayStaking";
+export { GatewayNetworkClass as GatewayNetwork } from "./service/GatewayNetwork";
+export { GatewayGatekeeper } from "./service/GatewayGatekeeper";
 export {
   TokenData,
   TokenState,

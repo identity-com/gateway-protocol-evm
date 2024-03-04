@@ -13,3 +13,12 @@ export const NULL_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 export const ZERO_BN = BigNumber.from("0");
 export const ONE_BN = BigNumber.from("1");
+
+// This is the default gas limit used by the GatewayTs forwarder
+// if not overridden.
+// The Forwarder requires a gas limit to be set, as it is what is passed into the
+// inner transaction and signed. Without this, the forwarder would not know
+// how much gas to send to the recipient smart contract.
+// This gas limit will be ignored if the populatedTransaction includes its own gasLimit,
+// so it can be overridden for each transaction if necessary.
+export const DEFAULT_GAS_LIMIT = 500_000;

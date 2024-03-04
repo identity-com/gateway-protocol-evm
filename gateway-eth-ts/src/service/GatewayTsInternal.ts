@@ -7,8 +7,8 @@ import {
   ReadOnlyOperation,
   TokenData,
 } from "../utils/types";
-import { Charge, ChargeType, NULL_CHARGE } from "../utils/charge";
-import { NULL_ADDRESS } from "../utils/constants";
+import { Charge, ChargeParties, ChargeType, NULL_CHARGE } from "../utils/charge";
+import { DEFAULT_GAS_LIMIT, NULL_ADDRESS } from "../utils/constants";
 import { omit } from "ramda";
 import { PayableOverrides } from "@ethersproject/contracts";
 
@@ -34,7 +34,7 @@ export class GatewayTsInternal<
   }
 
   private get overrides(): Overrides {
-    return omit(["tolerateMultipleTokens"], this.options);
+    return  { ...omit(["tolerateMultipleTokens"], this.options), gasLimit: DEFAULT_GAS_LIMIT};
   }
 
   /**
@@ -42,7 +42,7 @@ export class GatewayTsInternal<
    * @param charge
    * @private
    */
-  private payableOverrides(charge: Charge): PayableOverrides {
+  private payableOverrides(charge: Partial<Charge>): PayableOverrides {
     const value =
       charge.chargeType === ChargeType.ETH ? charge.value : undefined;
     return {
@@ -64,7 +64,7 @@ export class GatewayTsInternal<
     );
   }
 
-  public async checkedGetTokenId(
+  public async getTokenId(
     owner: string,
     network: bigint,
     onlyActive: boolean = false
@@ -83,147 +83,63 @@ export class GatewayTsInternal<
     return tokenIds[0];
   }
 
-  createNetwork(
-    name: string,
-    network: bigint,
-    daoGoverned: boolean,
-    daoManager?: string
-  ): Promise<O> {
-    return this.gatewayTokenContract.createNetwork(
-      network,
-      name,
-      daoGoverned,
-      daoManager || NULL_ADDRESS,
-      this.overrides
-    );
-  }
-
-  renameNetwork(name: string, network: bigint): Promise<O> {
-    return this.gatewayTokenContract.renameNetwork(
-      network,
-      name,
-      this.overrides
-    );
-  }
-
-  getGatekeeperNetwork(network: bigint): Promise<string> {
-    return this.gatewayTokenContract.getNetwork(
-      network,
-      this.readOnlyOverrides
-    );
-  }
-
-  listNetworks(
-    max: bigint = BigInt(256),
-    startAt: bigint = BigInt(0)
-  ): Promise<Record<string, bigint>> {
-    // Warning - can be inefficient and spam RPCs - use sparings
-    const networks: Record<string, bigint> = {};
-    const promises = Array.from(
-      { length: Number(max) },
-      (_, i) => i + Number(startAt)
-    ).map(async (i) => {
-      const network = (await this.getGatekeeperNetwork(BigInt(i)).catch(
-        () => null
-      )) as string | null;
-      if (network) networks[network] = BigInt(i);
-    });
-
-    return Promise.all(promises).then(() => networks);
-  }
-
-  addGatekeeper(gatekeeper: string, network: bigint): Promise<O> {
-    return this.gatewayTokenContract.addGatekeeper(
-      gatekeeper,
-      network,
-      this.overrides
-    );
-  }
-
-  removeGatekeeper(gatekeeper: string, network: bigint): Promise<O> {
-    return this.gatewayTokenContract.removeGatekeeper(
-      gatekeeper,
-      network,
-      this.overrides
-    );
-  }
-
-  addNetworkAuthority(authority: string, network: bigint): Promise<O> {
-    return this.gatewayTokenContract.addNetworkAuthority(
-      authority,
-      network,
-      this.overrides
-    );
-  }
-
-  removeNetworkAuthority(authority: string, network: bigint): Promise<O> {
-    return this.gatewayTokenContract.removeNetworkAuthority(
-      authority,
-      network,
-      this.overrides
-    );
-  }
-
-  setNetworkFeature(featureBitmask: bigint, network: bigint): Promise<O> {
-    return this.gatewayTokenContract.setNetworkFeatures(
-      network,
-      featureBitmask,
-      this.overrides
-    );
-  }
-
   issue(
     owner: string,
     network: bigint,
     expiry: BigNumberish = 0,
     bitmask: BigNumberish = 0,
-    charge: Charge = NULL_CHARGE
+    partiesInCharge: ChargeParties,
+    chargeType?: Partial<Charge>
   ): Promise<O> {
-    const expirationTime = expiry > 0 ? getExpirationTime(expiry) : 0;
+    const expirationTime = expiry.valueOf() as number;
 
     return this.gatewayTokenContract.mint(
       owner,
       network,
       expirationTime,
       bitmask,
-      charge,
-      this.payableOverrides(charge)
+      {tokenSender: partiesInCharge.feeSender, recipient: partiesInCharge.feeRecipient},
+      chargeType ? this.payableOverrides(chargeType): this.overrides,
     );
   }
 
-  async revoke(owner: string, network: bigint): Promise<O> {
-    const tokenId = await this.checkedGetTokenId(owner, network);
+  async revoke(owner: string, networkId: bigint): Promise<O> {
+    const tokenId = await this.getTokenId(owner, networkId);
     return this.gatewayTokenContract.revoke(tokenId, this.overrides);
   }
 
-  async burn(owner: string, network: bigint): Promise<O> {
-    const tokenId = await this.checkedGetTokenId(owner, network);
+  async burn(owner: string, networkId: bigint): Promise<O> {
+    const tokenId = await this.getTokenId(owner, networkId);
     return this.gatewayTokenContract.burn(tokenId, this.overrides);
   }
 
-  async freeze(owner: string, network: bigint): Promise<O> {
-    const tokenId = await this.checkedGetTokenId(owner, network);
+  async freeze(owner: string, networkId: bigint): Promise<O> {
+    const tokenId = await this.getTokenId(owner, networkId);
     return this.gatewayTokenContract.freeze(tokenId, this.overrides);
   }
 
-  async unfreeze(owner: string, network: bigint): Promise<O> {
-    const tokenId = await this.checkedGetTokenId(owner, network);
-    return this.gatewayTokenContract.unfreeze(tokenId, this.overrides);
+  async unfreeze(owner: string, networkId: bigint, partiesInCharge: ChargeParties): Promise<O> {
+    const tokenId = await this.getTokenId(owner, networkId);
+    return this.gatewayTokenContract.unfreeze(tokenId, {
+      tokenSender: partiesInCharge.feeSender,
+      recipient: partiesInCharge.feeRecipient,
+    });
   }
 
   async refresh(
     owner: string,
     network: bigint,
+    partiesInCharge: ChargeParties,
     expiry?: number | BigNumber,
-    charge: Charge = NULL_CHARGE
+    chargeType?: Charge
   ): Promise<O> {
-    const tokenId = await this.checkedGetTokenId(owner, network);
+    const tokenId = await this.getTokenId(owner, network);
     const expirationTime = getExpirationTime(expiry);
     return this.gatewayTokenContract.setExpiration(
       tokenId,
       expirationTime,
-      charge,
-      this.payableOverrides(charge)
+      { tokenSender: partiesInCharge.feeSender, recipient: partiesInCharge.feeRecipient },
+      chargeType ? this.payableOverrides(chargeType): this.overrides
     );
   }
 
@@ -232,7 +148,7 @@ export class GatewayTsInternal<
     network: bigint,
     bitmask: number | BigNumber
   ): Promise<O> {
-    const tokenId = await this.checkedGetTokenId(owner, network);
+    const tokenId = await this.getTokenId(owner, network);
     return this.gatewayTokenContract.setBitmask(
       tokenId,
       bitmask,
@@ -240,15 +156,15 @@ export class GatewayTsInternal<
     );
   }
 
-  verify(owner: string, network: bigint): Promise<boolean> {
-    return this.gatewayTokenContract["verifyToken(address,uint256)"](
-      owner,
-      network,
-      this.readOnlyOverrides
-    );
+  async verify(owner: string, network: bigint): Promise<boolean> {
+    const result = await this.gatewayTokenContract[
+      "verifyToken(address,uint256)"
+    ](owner, network, this.readOnlyOverrides);
+
+    return result.data != "0";
   }
 
-  async getToken(owner: string, network: bigint): Promise<TokenData | null> {
+  async getFirstTokenOnNetwork(owner: string, network: bigint): Promise<TokenData | null> {
     const [tokenId] = await this.getTokenIdsByOwnerAndNetwork(owner, network);
     if (!tokenId) return null;
 
@@ -265,7 +181,7 @@ export class GatewayTsInternal<
     };
   }
 
-  getTokenIdsByOwnerAndNetwork(
+  async getTokenIdsByOwnerAndNetwork(
     owner: string,
     network: bigint,
     onlyActive: boolean = false
@@ -276,5 +192,13 @@ export class GatewayTsInternal<
       onlyActive,
       this.readOnlyOverrides
     );
+  }
+
+  async getTokenBitmask(tokenId: BigNumber): Promise<BigNumber> {
+    return this.gatewayTokenContract.getTokenBitmask(tokenId);
+  }
+
+  async getExpiration(tokenId: BigNumber): Promise<BigNumber> {
+    return this.gatewayTokenContract.getExpiration(tokenId);
   }
 }

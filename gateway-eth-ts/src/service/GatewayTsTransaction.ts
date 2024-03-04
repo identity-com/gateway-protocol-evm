@@ -6,6 +6,7 @@ import {
   WriteOps,
   ReadOnlyOperation,
   readOnlyOpNames,
+  Options,
 } from "../utils/types";
 import { pick } from "ramda";
 
@@ -31,6 +32,6 @@ export class GatewayTsTransaction extends GatewayTsInternal<
       ...mapped,
       ...raw,
     };
-    super(mappedGatewayToken, options);
+    super(mappedGatewayToken, options as Options);
   }
 }

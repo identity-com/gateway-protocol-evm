@@ -14,6 +14,11 @@ export enum ChargeType {
   ERC20,
 }
 
+export type ChargeParties = {
+  feeSender: string,
+  feeRecipient: string
+}
+
 export type Charge = {
   value: BigNumber;
   chargeType: ChargeType;

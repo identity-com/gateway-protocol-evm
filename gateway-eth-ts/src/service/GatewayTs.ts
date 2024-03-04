@@ -16,6 +16,7 @@ import {
 } from "../utils";
 import { GatewayTsTransaction } from "./GatewayTsTransaction";
 import { Options } from "../utils/types";
+import { DEFAULT_GAS_LIMIT } from "../utils/constants";
 
 export class GatewayTs extends GatewayTsInternal<
   GatewayToken,
@@ -26,11 +27,11 @@ export class GatewayTs extends GatewayTsInternal<
   constructor(
     // ethers.js requires a Wallet instead of Signer for the _signTypedData function, until v6
     providerOrWallet: Provider | Wallet,
-    defaultGatewayToken: string,
+    gatewayTokenContractAddress: string,
     options: Options = {}
   ) {
     const gatewayTokenContract = GatewayToken__factory.connect(
-      defaultGatewayToken,
+      gatewayTokenContractAddress,
       providerOrWallet
     );
     super(gatewayTokenContract, options);
@@ -40,7 +41,7 @@ export class GatewayTs extends GatewayTsInternal<
   }
 
   private get forwarderOptions(): ForwarderOptions {
-    const gasLimit = this.options.gasLimit;
+    const gasLimit = this.options.gasLimit ? this.options.gasLimit : DEFAULT_GAS_LIMIT;
     if (gasLimit && typeof gasLimit !== "number") {
       throw new Error("gasLimit must be a number to use the forwarder");
     }
@@ -57,7 +58,7 @@ export class GatewayTs extends GatewayTsInternal<
       this.providerOrWallet,
       this.gatewayTokenContract,
       forwarderContract,
-      this.forwarderOptions
+      this.forwarderOptions as Options
     );
   }
 
