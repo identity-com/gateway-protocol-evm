@@ -49,6 +49,9 @@ describe('Gatekeeper', () => {
     beforeEach('setup', async () => {
         [deployer, primaryAuthority, gatekeeper, bob, stableCoin] = await ethers.getSigners();
 
+        // Silence warnings from upgradable contracts with immutable variables
+        await upgrades.silenceWarnings();
+
         const gatewayNetworkFactory = await new GatewayNetwork__factory(deployer);
         const gatekeeperContractFactory = await new Gatekeeper__factory(deployer);
         const gatewayStakingFactory = await new GatewayStaking__factory(deployer);
@@ -68,7 +71,7 @@ describe('Gatekeeper', () => {
 
         await gatewayStakingContract.deployed();
 
-        gatekeeperNetworkContract = await gatewayNetworkFactory.deploy(gatekeeperContract.address, gatewayStakingContract.address);
+        gatekeeperNetworkContract = await upgrades.deployProxy(gatewayNetworkFactory, [deployer.address, gatekeeperContract.address, gatewayStakingContract.address], {kind: 'uups', unsafeAllow: ['state-variable-immutable']}) as GatewayNetwork;
         await gatekeeperNetworkContract.deployed();
 
         defaultNetwork = getDefaultNetwork(primaryAuthority.address, []);

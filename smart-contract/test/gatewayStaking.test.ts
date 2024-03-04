@@ -26,6 +26,9 @@ describe('Gateway Staking', () => {
     beforeEach('setup', async () => {
         [deployer, bob, alice] = await ethers.getSigners();
 
+        // Silence warnings from upgradable contracts with immutable variables
+        await upgrades.silenceWarnings();
+
         const gatewayStakingFactory = await new GatewayStaking__factory(deployer);
         const erc20Factory = await new DummyERC20__factory(deployer);
 

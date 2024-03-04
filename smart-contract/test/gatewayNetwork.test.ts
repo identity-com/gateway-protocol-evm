@@ -53,6 +53,9 @@ describe('GatewayNetwork', () => {
     beforeEach('setup', async () => {
         [deployer, primaryAuthority, alice, bob, stableCoin, networkFeePayer] = await ethers.getSigners();
 
+        // Silence warnings from upgradable contracts with immutable variables
+        await upgrades.silenceWarnings();
+
         const gatewayNetworkFactory = await new GatewayNetwork__factory(deployer);
         const gatekeeperContractFactory = await new Gatekeeper__factory(deployer);
         const gatewayStakingFactory = await new GatewayStaking__factory(deployer);
@@ -70,9 +73,10 @@ describe('GatewayNetwork', () => {
               constructorArgs: [dummyErc20Contract.address, 'GatewayProtocolShares', 'GPS'],
               unsafeAllow: ['state-variable-immutable', 'constructor']
             }) as GatewayStaking;
+
         await gatewayStakingContract.deployed();
 
-        gatekeeperNetworkContract = await gatewayNetworkFactory.deploy(gatekeeperContract.address, gatewayStakingContract.address);
+        gatekeeperNetworkContract = await upgrades.deployProxy(gatewayNetworkFactory, [deployer.address, gatekeeperContract.address, gatewayStakingContract.address], {kind: 'uups', unsafeAllow: ['state-variable-immutable']}) as GatewayNetwork;
         await gatekeeperNetworkContract.deployed();
 
         await gatekeeperContract.setNetworkContractAddress(gatekeeperNetworkContract.address);

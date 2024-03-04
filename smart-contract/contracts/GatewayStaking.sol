@@ -19,7 +19,7 @@ contract GatewayStaking is IGatewayStaking, ParameterizedAccessControl, UUPSUpgr
 
    function initialize(address owner) initializer public {
       _superAdmins[owner] = true;
-    }
+   }
 
    function depositStake(uint256 assests) public override returns(uint256) {
       // Deposit stake using ERC-4626 deposit method

@@ -105,6 +105,9 @@ describe('GatewayToken', async () => {
   before('deploy contracts', async () => {
     [identityCom, alice, bob, carol, gatekeeper] = await ethers.getSigners();
 
+    // Silence warnings from upgradable contracts with immutable variables
+    await upgrades.silenceWarnings();
+
     const forwarderFactory = await ethers.getContractFactory('FlexibleNonceForwarder');
     const flagsStorageFactory = await ethers.getContractFactory('FlagsStorage');
     const chargeHandlerFactory = await ethers.getContractFactory('ChargeHandler');
@@ -130,13 +133,14 @@ describe('GatewayToken', async () => {
         constructorArgs: [dummyErc20Contract.address, 'GatewayProtocolShares', 'GPS'],
         unsafeAllow: ['state-variable-immutable', 'constructor']
       }) as GatewayStaking;
+
     await gatewayStakingContract.deployed();
 
     flagsStorage = await upgrades.deployProxy(flagsStorageFactory, [identityCom.address], { kind: 'uups' });
     await flagsStorage.deployed();
 
     chargeHandler = await upgrades.deployProxy(chargeHandlerFactory, [identityCom.address], { kind: 'uups' }) as ChargeHandler;
-    gatewayNetwork = await gatewayNetworkFactory.connect(identityCom).deploy(gatekeeperContract.address, gatewayStakingContract.address);
+    gatewayNetwork = await upgrades.deployProxy(gatewayNetworkFactory, [identityCom.address, gatekeeperContract.address, gatewayStakingContract.address], {kind: 'uups', unsafeAllow: ['state-variable-immutable']}) as GatewayNetwork;
     
     await chargeHandler.deployed();
     await gatewayNetwork.deployed();
