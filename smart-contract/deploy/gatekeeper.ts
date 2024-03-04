@@ -1,12 +1,13 @@
 import { addContractToAdmin, sleep, verify, getDeploymentSigner } from "./defender-utils";
-import { ethers } from 'hardhat';
+import { ethers, upgrades } from 'hardhat';
 import { Signer } from '@ethersproject/abstract-signer/src.ts'
 
 async function main() {
     const signer: Signer = await getDeploymentSigner();
+    const signerAddress = await signer.getAddress();
 
     const GatekeeperContractFactory = await ethers.getContractFactory("Gatekeeper", signer!);
-    const gatekeeperContract = await GatekeeperContractFactory.deploy();
+    const gatekeeperContract = await upgrades.deployProxy(GatekeeperContractFactory, [signerAddress], { kind: 'uups', unsafeAllow: ['state-variable-immutable']});
 
     await gatekeeperContract.deployed();
     const deployedAddress = gatekeeperContract.address;

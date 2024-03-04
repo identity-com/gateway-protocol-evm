@@ -1,20 +1,23 @@
 import { addContractToAdmin, sleep, verify, getDeploymentSigner } from "./defender-utils";
 import { Signer } from '@ethersproject/abstract-signer/src.ts'
-import { ethers } from 'hardhat';
+import { ethers, upgrades } from 'hardhat';
+import { BNB_TESTNET_CONTRACT_ADDRESSES } from "./utils";
 
 
 async function main() {
-    const testnetGatekeeperContractAddress = "0x8eB5f23002aA571B9c49b6b4c820c88c08e9ff9b";
-    const testnetStakingContractAddress = "0xe647c80DD554e89b70629E5f3751101A1a7F3cCE";
+    const testnetGatekeeperContractAddress = BNB_TESTNET_CONTRACT_ADDRESSES.gatekeeper;
+    const testnetStakingContractAddress = BNB_TESTNET_CONTRACT_ADDRESSES.gatewayStaking;
 
-    const args = [testnetGatekeeperContractAddress, testnetStakingContractAddress];
-        
     const signer: Signer = await getDeploymentSigner();
+    const signerAddress = await signer.getAddress();
+
+    const args = [signerAddress, testnetGatekeeperContractAddress, testnetStakingContractAddress];
+        
 
     const GatewayNetworkContractFactory = await ethers.getContractFactory("GatewayNetwork", signer!);
-    const gatewayNetworkContract = await GatewayNetworkContractFactory.deploy();
+    const gatewayNetworkContract = await upgrades.deployProxy(GatewayNetworkContractFactory, args, {kind: 'uups', unsafeAllow: ['state-variable-immutable']});
 
-    await gatewayNetworkContract.deployed(args);
+    await gatewayNetworkContract.deployed();
     const deployedAddress = gatewayNetworkContract.address;
 
     console.log(`GatewayNetwork deployed at ${deployedAddress}`);
