@@ -1,0 +1,30 @@
+{
+  "name": "gateway-ui",
+  "version": "1.0.0",
+  "description": "UI aspects of the gateway protocol",
+  "main": "index.ts",
+  "license": "MIT",
+  "devDependencies": {
+    "@storybook/addon-essentials": "^7.6.17",
+    "@storybook/addon-interactions": "^7.6.17",
+    "@storybook/addon-links": "^7.6.17",
+    "@storybook/addon-onboarding": "^1.0.11",
+    "@storybook/blocks": "^7.6.17",
+    "@storybook/react": "^7.6.17",
+    "@storybook/react-webpack5": "^7.6.17",
+    "@storybook/test": "^7.6.17",
+    "init": "^0.1.2",
+    "storybook": "^7.6.17",
+    "typescript": "^5.4.2"
+  },
+  "dependencies": {
+    "@types/react": "^18.2.64",
+    "@types/react-dom": "^18.2.21",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "scripts": {
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  }
+}
