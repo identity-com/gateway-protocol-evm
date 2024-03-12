@@ -11,7 +11,7 @@ interface GatewayProtocolPortalProps {
 export const GatewayProtocolPortal = (props: GatewayProtocolPortalProps) => {
     const { networkName, userWallet } = props;
 
-    const gatewayPortalData = useGatewayPortal({networkName, userAddress: userWallet.address});
+    const gatewayPortalData = useGatewayPortal({networkName, userWallet: userWallet});
 
     const { networkInfo, hasValidPass } = gatewayPortalData;
     return(

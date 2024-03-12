@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { GatewayGatekeeper, GatewayNetwork, GatewayTs } from "@identity.com/gateway-eth-ts";
+import { Wallet, utils } from 'ethers';
+import { BNB_TESTNET_CONTRACT_ADDRESSES } from './utils';
 
 export interface GatewayPortalProps {
-    userAddress: string,
+    userWallet: Wallet,
     networkName: string
 }
 
@@ -34,39 +37,92 @@ export interface GatewayPortalData {
     invalidPassData?: InvalidPassData
 }
 
+const getTokenContractAddresses = async (userWallet: Wallet) => {
+    const chainId = await userWallet.getChainId();
+
+    // BNB testnet
+    if(chainId == 97) {
+        return { 
+            network: BNB_TESTNET_CONTRACT_ADDRESSES.gatewayNetwork,
+            token: BNB_TESTNET_CONTRACT_ADDRESSES.gatewayToken,
+            gatekeeper: BNB_TESTNET_CONTRACT_ADDRESSES.gatekeeper
+        } ;
+    } else {
+        throw Error("Unsupported chain detected");
+    }
+}
+
 
 /**
  * Hook used to interact with gatway protocol typescript client
  */
 
 export const useGatewayPortal = (props: GatewayPortalProps) => {
-    const { networkName, userAddress } = props;
+    const { networkName, userWallet } = props;
 
-    // const [portalData, setPortalData] = useState<GatewayPortalData>();
+    const [portalData, setPortalData] = useState<GatewayPortalData>();
 
     //ts-client interaction
     useEffect(() => {
-        // Call network contract to fetch network data
 
-        // Verify if userAddress has a valid pass
+        const load = async () => {
+            const userAddress = userWallet.address;
+            const { network, token, gatekeeper} = await getTokenContractAddresses(userWallet);
+            const networkNameInBytes = utils.formatBytes32String(networkName);
 
-        // set state
-    }, [networkName, userAddress]);
+            // Call network contract to fetch network data
+            const tokenClient = new GatewayTs(userWallet, token);
+            const networkClient = new GatewayNetwork(userWallet, network);
+            const gatekeeperClient = new GatewayGatekeeper(userWallet,gatekeeper);
 
-    const portalData: GatewayPortalData = {
-        hasValidPass: true,
-        networkInfo: {
-            name: "Identity.com",
-            feeToken: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
-            description: "This network can meet your KYC needs by ID verification and verifying liveliness"
-        },
-        validPassData: {
-            issuerAddress: "0x9f16b0Ee033c1170061cD81f8F2DC67265309c0d",
-            linkToGatekeeper: "",
-            passExpiration: "1720744424"
+            const networkId = await networkClient.getNetworkId(networkNameInBytes);
+            const networkResponse = await networkClient.getNetwork(networkId.toString());
+
+            // Verify if userAddress has a valid pass
+            const hasValidToken = await tokenClient.verify(userAddress, networkId.valueOf() as bigint);
+
+            // set state
+
+            if(hasValidToken) {
+                const tokenData = await tokenClient.getFirstTokenOnNetwork(userAddress, networkId.valueOf() as bigint);
+                const tokenGatekeeper = await tokenClient.getTokenGatekeeper(tokenData.tokenId.toString());
+                setPortalData({
+                    hasValidPass: hasValidToken,
+                    networkInfo: {
+                        name: networkNameInBytes,
+                        description: "This network can meet your KYC needs by ID verification and verifying liveliness",
+                        feeToken: await networkResponse.supportedToken
+                    },
+                    validPassData: {
+                        issuerAddress: tokenGatekeeper,
+                        passExpiration: formatTimestampToDateTime(tokenData.expiration.toString()),
+                        linkToGatekeeper: ""
+                    }
+                });
+            } else {
+                const gatekeeperAddressesInNetwork = await networkClient.getGatekeepersOnNetwork(networkNameInBytes);
+
+                const gatekeepers = await Promise.all( gatekeeperAddressesInNetwork.map(async gatekeeperAddress => {
+                    const fees = await gatekeeperClient.getGatekeeperNetworkData(networkNameInBytes,gatekeeper);
+                    return { issuanceFee: fees.fees.issueFee, issuerAddress: gatekeeperAddress, passRequestLink: "" } as PassIssuer
+                }));
+
+                setPortalData({
+                    hasValidPass: hasValidToken,
+                    networkInfo: {
+                        name: networkNameInBytes,
+                        description: "This network can meet your KYC needs by ID verification and verifying liveliness",
+                        feeToken: await networkResponse.supportedToken
+                    },
+                    invalidPassData: {
+                        potentialIssuers: gatekeepers
+                    }
+                });
+            }
+
         }
-    }
-
+        load();
+    }, [networkName, userWallet]);
     return portalData;
 }
 

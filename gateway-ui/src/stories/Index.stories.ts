@@ -1,6 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { Wallet } from "ethers";
+import { Wallet, ethers } from "ethers";
 import { GatewayProtocolPortal } from '../index';
+
+const foundryDefaultPKWithToken = "0x7c852118294e51e653712a81e05800f419141751be58f605c371e15141b007a6"; // One of the 10 default addresses created by foundry. This address has a gateway token
+const publicRPC =  new ethers.providers.JsonRpcProvider("https://bsc-testnet-rpc.publicnode.com	");
 
 const meta: Meta<typeof GatewayProtocolPortal> = {
     title: 'Example protocol UI',
@@ -21,9 +24,16 @@ export default meta;
 type Story = StoryObj<typeof GatewayProtocolPortal>;
 
 
-export const Primary: Story = {
+export const WalletWithToken: Story = {
     args: {
-      userWallet: Wallet.createRandom(),
-    },
-  };
+      userWallet: new Wallet(foundryDefaultPKWithToken, publicRPC),
+  },
+};
+
+export const WalletWithoutToken: Story = {
+  args: {
+    userWallet: Wallet.createRandom().connect(publicRPC),
+  },
+};
+
   
