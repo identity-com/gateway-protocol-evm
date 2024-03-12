@@ -35,7 +35,7 @@ export const BNB_TESTNET_CONTRACT_ADDRESSES: GatewayProtocolContractAddresses = 
   chargeHandler: "0xDc3f03B401826FEAA80bdCA3c3CB2d5816a5Bc77",
   gatewayStaking: "0xf1311706736cf9e75992252e2ab2824f530f847b",
   erc20: "0xf380c37eFf6c5ab0593927dFf4Bc7AF6428D541F",
-  gatewayToken: "0xf8cd7dE59eBB84faC87850c946d5feD2C8CbdBfA",
+  gatewayToken: "0xc25e8e4fd1a892e6c6883ea8e6f3c3eb3b115f44",
   forwarder: "0x96b905fF1eDfAdAEc03879450f3DC35a8124dc05"
 }
 

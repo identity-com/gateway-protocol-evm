@@ -4,7 +4,7 @@ import { GatewayGatekeeper } from "../../src/service/GatewayGatekeeper";
 import { GatewayNetwork__factory, GatewayNetwork, Gatekeeper, Gatekeeper__factory} from "../../src/contracts/typechain-types";
 import { BaseProvider } from "@ethersproject/providers";
 import { Wallet, ethers } from "ethers";
-import { BNB_TESTNET_CONTRACT_ADDRESSES, gatekeeperOneTestnetWallet, initTestNetwork, testNetworkName } from "../utils";
+import { BNB_TESTNET_CONTRACT_ADDRESSES, gatekeeperOneTestnetWallet, testNetworkName } from "../utils";
 
 
 dotenv.config();
@@ -25,17 +25,14 @@ describe("Gateway Gatekeeper TS class", function () {
 
         gatekeeper = gatekeeperOneTestnetWallet.connect(provider);
         randomWallet = Wallet.createRandom();
-        
 
         gatekeeperClient = new GatewayGatekeeper(gatekeeper, BNB_TESTNET_CONTRACT_ADDRESSES.gatekeeper);
         gatewayNetworkContract = GatewayNetwork__factory.connect(BNB_TESTNET_CONTRACT_ADDRESSES.gatewayNetwork, gatekeeper);
         gatekeeperContract = Gatekeeper__factory.connect(BNB_TESTNET_CONTRACT_ADDRESSES.gatekeeper, gatekeeper)
-
-        await initTestNetwork(gatewayNetworkContract, gatekeeper);
     });
 
     it("should return the state of a valid gatekeeper", async function () {
-        const gatekeeperState = await gatekeeperClient.getGatekeeperNetworkData(testNetworkName, gatekeeper.address);
+        const gatekeeperState = await gatekeeperClient.getGatekeeperNetworkData(testNetworkName, await gatekeeper.getAddress());
 
         assert.equal(gatekeeperState.status, 1);
         assert.equal(gatekeeperState.initialized, true);

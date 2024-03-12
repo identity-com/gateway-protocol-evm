@@ -37,8 +37,6 @@ describe("GatewayTS", function () {
 
     gatewayNetworkContract = GatewayNetwork__factory.connect(BNB_TESTNET_CONTRACT_ADDRESSES.gatewayNetwork, gatekeeper);
 
-    await initTestNetwork(gatewayNetworkContract, gatekeeper);
-
     testNetworkId = (await gatewayNetworkContract.getNetworkId(testNetworkName)).toBigInt();
 
     sampleWalletAddress = Wallet.createRandom().address;
