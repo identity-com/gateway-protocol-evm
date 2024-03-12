@@ -27,7 +27,7 @@ async function main() {
 
     await sleep(6000);
 
-    await verify(deployedAddress,[]);
+    await verify(deployedAddress,args);
 
     // Need to wait to avoid rate limit
     await sleep(2000);

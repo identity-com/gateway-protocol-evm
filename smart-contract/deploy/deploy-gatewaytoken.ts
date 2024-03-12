@@ -1,15 +1,16 @@
 import { sleep, getDeploymentSigner } from "./defender-utils";
 import hre , { ethers, upgrades } from "hardhat";
 import { Signer } from '@ethersproject/abstract-signer/src.ts'
+import { BNB_TESTNET_CONTRACT_ADDRESSES } from "./utils";
 
 async function main() {    
     const signer: Signer = await getDeploymentSigner();
 
-    const gatewayNetworkContractAddress = "0xAccdD5e32245b090e102E94E9a78A8996F834333";
-    const gatekeeperContractAddress = "0x8eB5f23002aA571B9c49b6b4c820c88c08e9ff9b";
-    const gatewayStakingContractAddress = "0xe647c80DD554e89b70629E5f3751101A1a7F3cCE";
-    const chargeHandlerContractAddress = "0xDc3f03B401826FEAA80bdCA3c3CB2d5816a5Bc77";
-    const flagsStorageContractAddress = "0x06c9d91b3Acc1D2434342242C987064E555FFe8a";
+    const gatewayNetworkContractAddress = BNB_TESTNET_CONTRACT_ADDRESSES.gatewayNetwork;
+    const gatekeeperContractAddress = BNB_TESTNET_CONTRACT_ADDRESSES.gatekeeper;
+    const gatewayStakingContractAddress = BNB_TESTNET_CONTRACT_ADDRESSES.gatewayStaking;
+    const chargeHandlerContractAddress = BNB_TESTNET_CONTRACT_ADDRESSES.chargeHandler;
+    const flagsStorageContractAddress = BNB_TESTNET_CONTRACT_ADDRESSES.flagsStorage;
     const superAdmin = process.env.BSC_TESTNET_RELAYER!;
     const name = "Gateway Token";
     const symbol = "GWTK";
