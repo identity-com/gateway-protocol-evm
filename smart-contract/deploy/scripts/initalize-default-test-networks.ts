@@ -82,7 +82,7 @@ async function main() {
         // - Add defender relayer as gatekeeper + primary autority
         // Gatekeeper claim primary authority
         const defaultIdentityNetwork: IGatewayNetwork.GatekeeperNetworkDataStruct = {
-            primaryAuthority: gatekeeprOne.address,
+            primaryAuthority: await signer!.getAddress(),
             name: testNetworkName,
             passExpireDurationInSeconds: 2628000,
             networkFeatureMask: 0,
@@ -99,9 +99,9 @@ async function main() {
     
         console.log(`Creating defaultIdentityNetwork`);
     
-        await networkContract.connect(signer!).createNetwork(defaultIdentityNetwork, {gasLimit: 500000});
+       await networkContract.connect(signer!).createNetwork(defaultIdentityNetwork, {gasLimit: 500000});
             
-        await sleep(2000);
+       await sleep(2000);
 }
 
 

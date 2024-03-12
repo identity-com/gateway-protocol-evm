@@ -12,7 +12,7 @@ export const gatekeeperTwoTestnetWallet = new Wallet("0x5de4111afa1a4b94908f8310
 export const userOneWallet = new Wallet("0x47e179ec197488593b187f80a00eb0da91f1b9d0b13f8733639f19c30a34926a"); // 0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
-export const testNetworkName = utils.formatBytes32String("testNetwork_client");
+export const testNetworkName = utils.formatBytes32String("Identity.com KYC Verification");
 
 export const testNetworkNameWithErc20Fees = "0x6e7574776f726b5f476974685f65726332305f66656573000000000000000000"; // gatekeeper 1
 export const testNetworkNameWithNativeFees = "0x6e6574776f726b5f776974685f6e61746976655f666565730000000000000000"; // gatekeeper 2
