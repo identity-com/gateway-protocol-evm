@@ -58,13 +58,15 @@ export type ReadOnlyOps =
   | "getTokenIdsByOwnerAndNetwork"
   | "getTokenIdsByOwnerAndNetwork"
   | "getExpiration"
-  | "getTokenBitmask";
+  | "getTokenBitmask"
+  | "getIssuingGatekeeper";
 export const readOnlyOpNames = [
   "getToken",
   "verifyToken(address,uint256)",
   "getTokenIdsByOwnerAndNetwork",
   "getExpiration",
-  "getTokenBitmask"
+  "getTokenBitmask",
+  "getIssuingGatekeeper"
 ];
 
 // A GatewayToken contract instance with the read operations exposed

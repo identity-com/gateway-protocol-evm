@@ -83,6 +83,10 @@ export class GatewayTsInternal<
     return tokenIds[0];
   }
 
+  public async getTokenGatekeeper(tokenId: string): Promise<string> {
+    return await this.gatewayTokenContract.getIssuingGatekeeper(tokenId);
+  }
+
   issue(
     owner: string,
     network: bigint,
