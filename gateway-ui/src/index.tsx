@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Wallet } from "ethers";
-import { Box, Button, Chip, Container, Stack, TextField, Typography } from '@mui/material';
+import { Box, Button, Chip, CircularProgress, Container, Grid, Stack, TextField, Typography } from '@mui/material';
 import { GatewayPortalData, formatTimestampToDateTime, useGatewayPortal } from './useGatewayPortal';
 
 interface GatewayProtocolPortalProps {
@@ -13,9 +13,18 @@ export const GatewayProtocolPortal = (props: GatewayProtocolPortalProps) => {
 
     const gatewayPortalData = useGatewayPortal({networkName, userWallet: userWallet});
 
+    if(!gatewayPortalData) {
+        //Loading indicator
+        return(
+            <Box>
+                <CircularProgress />
+            </Box>
+        )
+    }
+
     const { networkInfo, hasValidPass } = gatewayPortalData;
     return(
-        <Box borderColor={hasValidPass ? "slateblue" : "lightyellow"} sx={{borderRadius: "1px"}} alignItems={"center"}>
+        <Box sx={{border: hasValidPass ? "2px solid slateblue" : "2px solid lightyellow"}} alignItems={"center"} justifyContent={"center"}>
             {/* Section for indicating a valid pass being detected or not */}
             <ValidPassIndicator isValid={gatewayPortalData.hasValidPass}/>
 
@@ -50,8 +59,8 @@ interface NetworkInfoProps {
 export const NetworkInfo = (props: NetworkInfoProps) => {
     const { name, description, feeTokenText} = props
     return(
-        <Stack spacing={2.5}>
-            <Typography variant='h3'>
+        <Stack spacing={3}>
+            <Typography variant='h5'>
                 {"Network: " + name}
             </Typography>
             <TextField id="filled-basic" variant="outlined" disabled={true} defaultValue={description} multiline/>
@@ -90,7 +99,7 @@ export const PassInfo = (props: PassInfoProps) => {
                         Pass Expiration: 
                     </Typography>
                     <Typography variant='body1'>
-                        {" " + formatTimestampToDateTime(validPassData.passExpiration)}
+                        {" " + validPassData.passExpiration}
                     </Typography>
                 </Stack>
             </Stack>
@@ -99,9 +108,44 @@ export const PassInfo = (props: PassInfoProps) => {
         // Show table of issuers state
         const { invalidPassData } = gatewayPortalData;
         return(
-            <Container>
-    
-            </Container>
+            <Grid container spacing={2}>
+                <Grid item xs={4}>
+                    <Typography variant='body1'>
+                        Pass Issuer
+                    </Typography>
+                </Grid>
+                <Grid item xs={4}>
+                    <Typography variant='body1'>
+                        Issuance Fee
+                    </Typography>
+                </Grid>
+                <Grid item xs={4}></Grid>
+                <Container>
+                {
+                    invalidPassData.potentialIssuers.map(passIssuer =>
+                        (
+                            <Container>
+                                <Grid item xs={4}>
+                                    <Typography variant='body2'>
+                                        {passIssuer.issuerAddress}
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={4}>
+                                    <Typography variant='body2'>
+                                        {passIssuer.issuanceFee}
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={4}>
+                                    <Button variant="contained">
+                                        Request Pass
+                                    </Button>
+                                </Grid>
+                            </Container>
+                        )
+                    )
+                }
+                </Container>
+            </Grid>
         )
     }
 }

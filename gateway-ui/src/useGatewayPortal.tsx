@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { GatewayGatekeeper, GatewayNetwork, GatewayTs } from "@identity.com/gateway-eth-ts";
+import { GatewayGatekeeper, GatewayNetwork, GatewayTs, TokenState } from "@identity.com/gateway-eth-ts";
 import { Wallet, utils } from 'ethers';
 import { BNB_TESTNET_CONTRACT_ADDRESSES } from './utils';
 
@@ -60,7 +60,7 @@ const getTokenContractAddresses = async (userWallet: Wallet) => {
 export const useGatewayPortal = (props: GatewayPortalProps) => {
     const { networkName, userWallet } = props;
 
-    const [portalData, setPortalData] = useState<GatewayPortalData>();
+    const [portalData, setPortalData] = useState<GatewayPortalData>(undefined);
 
     //ts-client interaction
     useEffect(() => {
@@ -68,18 +68,21 @@ export const useGatewayPortal = (props: GatewayPortalProps) => {
         const load = async () => {
             const userAddress = userWallet.address;
             const { network, token, gatekeeper} = await getTokenContractAddresses(userWallet);
-            const networkNameInBytes = utils.formatBytes32String(networkName);
 
-            // Call network contract to fetch network data
             const tokenClient = new GatewayTs(userWallet, token);
             const networkClient = new GatewayNetwork(userWallet, network);
             const gatekeeperClient = new GatewayGatekeeper(userWallet,gatekeeper);
+            
+            const networkNameInBytes = utils.formatBytes32String(networkName);
+
+            // Call network contract to fetch network data
 
             const networkId = await networkClient.getNetworkId(networkNameInBytes);
             const networkResponse = await networkClient.getNetwork(networkId.toString());
 
             // Verify if userAddress has a valid pass
-            const hasValidToken = await tokenClient.verify(userAddress, networkId.valueOf() as bigint);
+            const tokenData = await tokenClient.getFirstTokenOnNetwork(userAddress, networkId.valueOf() as bigint);
+            const hasValidToken = tokenData && tokenData.state == TokenState.ACTIVE;
 
             // set state
 
@@ -103,7 +106,7 @@ export const useGatewayPortal = (props: GatewayPortalProps) => {
                 const gatekeeperAddressesInNetwork = await networkClient.getGatekeepersOnNetwork(networkNameInBytes);
 
                 const gatekeepers = await Promise.all( gatekeeperAddressesInNetwork.map(async gatekeeperAddress => {
-                    const fees = await gatekeeperClient.getGatekeeperNetworkData(networkNameInBytes,gatekeeper);
+                    const fees = await gatekeeperClient.getGatekeeperNetworkData(networkNameInBytes,gatekeeperAddress);
                     return { issuanceFee: fees.fees.issueFee, issuerAddress: gatekeeperAddress, passRequestLink: "" } as PassIssuer
                 }));
 
