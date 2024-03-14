@@ -106,6 +106,7 @@ export const useGatewayPortal = (props: GatewayPortalProps) => {
                 });
             } else {
                 const gatekeeperAddressesInNetwork = await networkClient.getGatekeepersOnNetwork(networkNameInBytes);
+                const feeTokenAddress = await networkResponse.supportedToken;
 
                 const gatekeepers = await Promise.all( gatekeeperAddressesInNetwork.map(async gatekeeperAddress => {
                     const fees = await gatekeeperClient.getGatekeeperNetworkData(networkNameInBytes,gatekeeperAddress);
@@ -117,7 +118,7 @@ export const useGatewayPortal = (props: GatewayPortalProps) => {
                     networkInfo: {
                         name: networkNameInBytes,
                         description: "This network can meet your KYC needs by ID verification and verifying liveliness",
-                        feeToken: await networkResponse.supportedToken
+                        feeToken: feeTokenAddress == ZERO_ADDRESS ? "BNB" : feeTokenAddress
                     },
                     invalidPassData: {
                         potentialIssuers: gatekeepers
