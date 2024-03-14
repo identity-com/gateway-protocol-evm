@@ -19,8 +19,8 @@ async function main() {
     const gatewayNetworkContract = await upgrades.upgradeProxy(
         BNB_TESTNET_CONTRACT_ADDRESSES.gatewayNetwork,
         GatewayNetworkContractFactory,
-        {kind: 'uups', unsafeAllow: ['state-variable-immutable']
-    });
+        {kind: 'uups'}
+    );
 
     await gatewayNetworkContract.deployed();
     const deployedAddress = gatewayNetworkContract.address;

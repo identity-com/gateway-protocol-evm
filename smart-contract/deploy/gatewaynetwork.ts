@@ -15,7 +15,7 @@ async function main() {
         
 
     const GatewayNetworkContractFactory = await ethers.getContractFactory("GatewayNetwork", signer!);
-    const gatewayNetworkContract = await upgrades.deployProxy(GatewayNetworkContractFactory, args, {kind: 'uups', unsafeAllow: ['state-variable-immutable']});
+    const gatewayNetworkContract = await upgrades.deployProxy(GatewayNetworkContractFactory, args, {kind: 'uups'});
 
     await gatewayNetworkContract.deployed();
     const deployedAddress = gatewayNetworkContract.address;

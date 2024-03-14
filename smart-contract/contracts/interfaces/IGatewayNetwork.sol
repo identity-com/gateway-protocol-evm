@@ -15,7 +15,9 @@ abstract contract  IGatewayNetwork {
         uint16 freezeFee;
     }
 
+    /// @custom:oz-upgrades-unsafe-allow state-variable-immutable
     uint16 immutable MAX_FEE_BPS = 10000; // 100%
+    /// @custom:oz-upgrades-unsafe-allow state-variable-immutable
     uint256 public immutable FEE_CONFIG_DELAY_TIME = 7 days;
 
     /**

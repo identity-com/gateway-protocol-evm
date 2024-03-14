@@ -10,8 +10,8 @@ async function main() {
     const gatekeeperContract = await upgrades.upgradeProxy(
         BNB_TESTNET_CONTRACT_ADDRESSES.gatekeeper,
         GatekeeperContractFactory,  
-        { kind: 'uups', unsafeAllow: ['state-variable-immutable']
-    });
+        { kind: 'uups'}
+    );
 
     await gatekeeperContract.deployed();
     const deployedAddress = gatekeeperContract.address;

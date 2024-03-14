@@ -57,7 +57,7 @@ describe('Gatekeeper', () => {
         const gatewayStakingFactory = await new GatewayStaking__factory(deployer);
         const erc20Factory = await new DummyERC20__factory(deployer);
 
-        gatekeeperContract = await upgrades.deployProxy(gatekeeperContractFactory, [deployer.address], { kind: 'uups', unsafeAllow: ['state-variable-immutable']}) as Gatekeeper;
+        gatekeeperContract = await upgrades.deployProxy(gatekeeperContractFactory, [deployer.address], { kind: 'uups'}) as Gatekeeper;
 
         dummyErc20Contract = await erc20Factory.deploy('DummyToken', 'DT', 10000000000, deployer.address);
         await dummyErc20Contract.deployed();
@@ -71,7 +71,7 @@ describe('Gatekeeper', () => {
 
         await gatewayStakingContract.deployed();
 
-        gatekeeperNetworkContract = await upgrades.deployProxy(gatewayNetworkFactory, [deployer.address, gatekeeperContract.address, gatewayStakingContract.address], {kind: 'uups', unsafeAllow: ['state-variable-immutable']}) as GatewayNetwork;
+        gatekeeperNetworkContract = await upgrades.deployProxy(gatewayNetworkFactory, [deployer.address, gatekeeperContract.address, gatewayStakingContract.address], {kind: 'uups'}) as GatewayNetwork;
         await gatekeeperNetworkContract.deployed();
 
         defaultNetwork = getDefaultNetwork(primaryAuthority.address, []);
