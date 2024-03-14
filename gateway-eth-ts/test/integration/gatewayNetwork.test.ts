@@ -70,12 +70,12 @@ describe("Gateway Network TS class", function () {
             assert.equal(await gatewayNetworkClient.isGatekeeper(testNetworkNameWithErc20Fees, randomWallet.address), false);
         }).timeout(15000);
 
-        it.skip("should successfully update the primary authority of test network", async function () {
+        it("should successfully update the primary authority of test network", async function () {
             this.timeout(20000);
             const resultOne = await gatewayNetworkClient.updatePrimaryAuthority(testNetworkNameWithErc20Fees, randomWallet.address);
             await resultOne.wait();
 
-            const randomWalletClient = gatewayNetworkClient = new GatewayNetworkClass(randomWallet, BNB_TESTNET_CONTRACT_ADDRESSES.gatewayNetwork);
+            const randomWalletClient = new GatewayNetworkClass(randomWallet, BNB_TESTNET_CONTRACT_ADDRESSES.gatewayNetwork);
 
             const resultTwo = await randomWalletClient.claimPrimaryAuthority(testNetworkNameWithErc20Fees);
             await resultTwo.wait();
