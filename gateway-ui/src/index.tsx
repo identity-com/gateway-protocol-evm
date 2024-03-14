@@ -24,7 +24,7 @@ export const GatewayProtocolPortal = (props: GatewayProtocolPortalProps) => {
 
     const { networkInfo, hasValidPass } = gatewayPortalData;
     return(
-        <Stack sx={{border: hasValidPass ? "2px solid slateblue" : "2px solid #ED6C03", borderRadius: "10px"}} alignItems={"center"} justifyContent={"center"} padding={"1rem"} spacing={3}>
+        <Stack sx={{border: hasValidPass ? "2px solid slateblue" : "2px solid #ED6C03", borderRadius: "10px"}} alignItems={"center"} justifyContent={"center"} padding={"1rem"} spacing={3} maxWidth={"750px"}>
             {/* Section for indicating a valid pass being detected or not */}
             <ValidPassIndicator isValid={gatewayPortalData.hasValidPass}/>
 

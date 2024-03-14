@@ -134,5 +134,5 @@ export const useGatewayPortal = (props: GatewayPortalProps) => {
 
 export const formatTimestampToDateTime = (unixTimeString: string) => {
     const date = new Date(Number(unixTimeString)  * 1000)
-    return  date.toLocaleTimeString() + " " + date.toLocaleDateString()
+    return  date.toLocaleDateString() + " at " + date.toLocaleTimeString()
 }
