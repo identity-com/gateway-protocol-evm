@@ -1,4 +1,4 @@
-import { ethers } from 'hardhat';
+import { ethers, upgrades } from 'hardhat';
 import { expect } from 'chai';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { 
@@ -26,13 +26,21 @@ describe('Gateway Staking', () => {
     beforeEach('setup', async () => {
         [deployer, bob, alice] = await ethers.getSigners();
 
+        // Silence warnings from upgradable contracts with immutable variables
+        await upgrades.silenceWarnings();
+
         const gatewayStakingFactory = await new GatewayStaking__factory(deployer);
         const erc20Factory = await new DummyERC20__factory(deployer);
 
         dummyAssetContract = await erc20Factory.deploy('DummyToken', 'DT', 10000000000, deployer.address);
         await dummyAssetContract.deployed();
 
-        gatewayStakingContract = await gatewayStakingFactory.deploy(dummyAssetContract.address, 'GatewayProtocolShares', 'GPS');
+        gatewayStakingContract = await upgrades.deployProxy(gatewayStakingFactory, [deployer.address], 
+            { 
+                kind: 'uups', 
+                constructorArgs: [dummyAssetContract.address, 'GatewayProtocolShares', 'GPS'] ,
+                unsafeAllow: ['state-variable-immutable', 'constructor']
+            }) as GatewayStaking;
         await gatewayStakingContract.deployed();
     })
 

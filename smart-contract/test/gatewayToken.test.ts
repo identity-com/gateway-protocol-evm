@@ -105,6 +105,9 @@ describe('GatewayToken', async () => {
   before('deploy contracts', async () => {
     [identityCom, alice, bob, carol, gatekeeper] = await ethers.getSigners();
 
+    // Silence warnings from upgradable contracts with immutable variables
+    await upgrades.silenceWarnings();
+
     const forwarderFactory = await ethers.getContractFactory('FlexibleNonceForwarder');
     const flagsStorageFactory = await ethers.getContractFactory('FlagsStorage');
     const chargeHandlerFactory = await ethers.getContractFactory('ChargeHandler');
@@ -118,20 +121,26 @@ describe('GatewayToken', async () => {
     forwarder = await forwarderFactory.deploy(100);
     await forwarder.deployed();
 
-    gatekeeperContract = await gatekeeperContractFactory.deploy();
+    gatekeeperContract = await upgrades.deployProxy(gatekeeperContractFactory, [identityCom.address], { kind: 'uups', unsafeAllow: ['state-variable-immutable']}) as Gatekeeper;
     await gatekeeperContract.deployed();
 
     dummyErc20Contract = await dummyERC20Factory.deploy('DummyToken', 'DT', 10000000000, identityCom.address);
         await dummyErc20Contract.deployed();
 
-    gatewayStakingContract = await gatewayStakingFactory.deploy(dummyErc20Contract.address, 'GatewayProtocolShares', 'GPS');
+    gatewayStakingContract = await upgrades.deployProxy(gatewayStakingFactory, [identityCom.address], 
+      {
+        kind: 'uups', 
+        constructorArgs: [dummyErc20Contract.address, 'GatewayProtocolShares', 'GPS'],
+        unsafeAllow: ['state-variable-immutable', 'constructor']
+      }) as GatewayStaking;
+
     await gatewayStakingContract.deployed();
 
     flagsStorage = await upgrades.deployProxy(flagsStorageFactory, [identityCom.address], { kind: 'uups' });
     await flagsStorage.deployed();
 
     chargeHandler = await upgrades.deployProxy(chargeHandlerFactory, [identityCom.address], { kind: 'uups' }) as ChargeHandler;
-    gatewayNetwork = await gatewayNetworkFactory.connect(identityCom).deploy(gatekeeperContract.address, gatewayStakingContract.address);
+    gatewayNetwork = await upgrades.deployProxy(gatewayNetworkFactory, [identityCom.address, gatekeeperContract.address, gatewayStakingContract.address], {kind: 'uups', unsafeAllow: ['state-variable-immutable']}) as GatewayNetwork;
     
     await chargeHandler.deployed();
     await gatewayNetwork.deployed();

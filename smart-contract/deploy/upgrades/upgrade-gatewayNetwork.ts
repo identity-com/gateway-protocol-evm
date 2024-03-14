@@ -1,7 +1,7 @@
-import { addContractToAdmin, sleep, verify, getDeploymentSigner } from "./defender-utils";
+import { addContractToAdmin, sleep, verify, getDeploymentSigner } from ".././defender-utils";
 import { Signer } from '@ethersproject/abstract-signer/src.ts'
 import { ethers, upgrades } from 'hardhat';
-import { BNB_TESTNET_CONTRACT_ADDRESSES } from "./utils";
+import { BNB_TESTNET_CONTRACT_ADDRESSES } from ".././utils";
 
 
 async function main() {
@@ -15,12 +15,17 @@ async function main() {
         
 
     const GatewayNetworkContractFactory = await ethers.getContractFactory("GatewayNetwork", signer!);
-    const gatewayNetworkContract = await upgrades.deployProxy(GatewayNetworkContractFactory, args, {kind: 'uups'});
+    
+    const gatewayNetworkContract = await upgrades.upgradeProxy(
+        BNB_TESTNET_CONTRACT_ADDRESSES.gatewayNetwork,
+        GatewayNetworkContractFactory,
+        {kind: 'uups'}
+    );
 
     await gatewayNetworkContract.deployed();
     const deployedAddress = gatewayNetworkContract.address;
 
-    console.log(`GatewayNetwork deployed at ${deployedAddress}`);
+    console.log(`GatewayNetwork upgraded at ${deployedAddress}`);
 
     await sleep(6000);
 

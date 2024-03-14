@@ -15,8 +15,10 @@ abstract contract  IGatewayNetwork {
         uint16 freezeFee;
     }
 
-    uint16 MAX_FEE_BPS = 10000; // 100%
-    uint256 public FEE_CONFIG_DELAY_TIME = 7 days;
+    /// @custom:oz-upgrades-unsafe-allow state-variable-immutable
+    uint16 immutable MAX_FEE_BPS = 10000; // 100%
+    /// @custom:oz-upgrades-unsafe-allow state-variable-immutable
+    uint256 public immutable FEE_CONFIG_DELAY_TIME = 7 days;
 
     /**
      * @dev This struct represents data associated with the state of a gatekeeper network

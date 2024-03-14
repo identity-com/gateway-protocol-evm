@@ -4,9 +4,10 @@ pragma solidity >=0.8.19;
 import { IGatewayGatekeeper } from './interfaces/IGatewayGatekeeper.sol';
 import { IGatewayNetwork } from "./interfaces/IGatewayNetwork.sol";
 import { ParameterizedAccessControl } from "./ParameterizedAccessControl.sol";
+import { UUPSUpgradeable } from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 
-contract Gatekeeper is ParameterizedAccessControl, IGatewayGatekeeper {
+contract Gatekeeper is ParameterizedAccessControl, IGatewayGatekeeper, UUPSUpgradeable {
     address public _gatewayNetworkContract;
 
 
@@ -15,9 +16,9 @@ contract Gatekeeper is ParameterizedAccessControl, IGatewayGatekeeper {
         _;
     }
 
-    constructor() {
-        // Contract deployer is the initial super admin
-        _superAdmins[msg.sender] = true;
+    function initialize(address owner) initializer public {
+      // Contract deployer is the initial super admin
+      _superAdmins[owner] = true;
     }
 
     function setNetworkContractAddress(address gatewayNetworkContract) external onlySuperAdmin override {
@@ -66,4 +67,5 @@ contract Gatekeeper is ParameterizedAccessControl, IGatewayGatekeeper {
         delete _gatekeeperStates[gatekeeper][networkName];
     }
 
+    function _authorizeUpgrade(address) internal override onlySuperAdmin {}
 }

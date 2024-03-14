@@ -7,11 +7,17 @@ import {ContextUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/Cont
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { ERC4626 } from "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
+import { UUPSUpgradeable } from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
+contract GatewayStaking is IGatewayStaking, ParameterizedAccessControl, UUPSUpgradeable {
 
-contract GatewayStaking is IGatewayStaking, ParameterizedAccessControl {
+   
    constructor(ERC20 asset_, string memory name_, string memory symbol_) ERC4626(asset_) ERC20(name_, symbol_) {
-      _superAdmins[msg.sender] = true;
+      _disableInitializers();
+   }
+
+   function initialize(address owner) initializer public {
+      _superAdmins[owner] = true;
    }
 
    function depositStake(uint256 assests) public override returns(uint256) {
@@ -46,4 +52,6 @@ contract GatewayStaking is IGatewayStaking, ParameterizedAccessControl {
    function _msgData() internal view override(Context,ContextUpgradeable) returns (bytes calldata) {
       return Context._msgData();
    }
+
+   function _authorizeUpgrade(address) internal override onlySuperAdmin {}
 }

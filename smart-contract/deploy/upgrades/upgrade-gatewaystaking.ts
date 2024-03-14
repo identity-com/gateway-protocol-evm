@@ -1,7 +1,7 @@
-import { addContractToAdmin, getDeploymentSigner, sleep, verify } from "./defender-utils";
+import { addContractToAdmin, getDeploymentSigner, sleep, verify } from ".././defender-utils";
 import { ethers , upgrades } from 'hardhat';
 import { Signer } from '@ethersproject/abstract-signer/src.ts'
-import { BNB_TESTNET_CONTRACT_ADDRESSES } from "./utils";
+import { BNB_TESTNET_CONTRACT_ADDRESSES } from ".././utils";
 
 async function main() {
     const testnetTokenContractAddress = BNB_TESTNET_CONTRACT_ADDRESSES.erc20;
@@ -9,25 +9,26 @@ async function main() {
     const args = [testnetTokenContractAddress , 'Identity Test Staking Vault', "ID_TEST_STAKE"];
     
     const signer: Signer = await getDeploymentSigner();
-    const signerAddress = await signer.getAddress();
 
     const GatewayStakingContractFactory = await ethers.getContractFactory("GatewayStaking", signer!);
 
-    const gatewayStakingContract = await upgrades.deployProxy(GatewayStakingContractFactory, [signerAddress], 
+    const gatewayStakingContract = await upgrades.upgradeProxy(
+        BNB_TESTNET_CONTRACT_ADDRESSES.gatewayStaking, 
+        GatewayStakingContractFactory, 
         { 
             kind: 'uups', 
-            constructorArgs: args ,
+            constructorArgs: args,
             unsafeAllow: ['state-variable-immutable', 'constructor']
         });
 
     await gatewayStakingContract.deployed();
     const deployedAddress = gatewayStakingContract.address;
 
-    console.log(`GatewayStaking deployed at ${deployedAddress}`);
+    console.log(`GatewayStaking upgraded at ${deployedAddress}`);
 
     await sleep(6000);
 
-    await verify(deployedAddress,args);
+    await verify(deployedAddress,[]);
 
     // Need to wait to avoid rate limit
     await sleep(2000);

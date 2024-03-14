@@ -1,4 +1,4 @@
-import { ethers } from 'hardhat';
+import { ethers, upgrades } from 'hardhat';
 import { expect } from 'chai';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { time } from "@nomicfoundation/hardhat-network-helpers";
@@ -53,21 +53,30 @@ describe('GatewayNetwork', () => {
     beforeEach('setup', async () => {
         [deployer, primaryAuthority, alice, bob, stableCoin, networkFeePayer] = await ethers.getSigners();
 
+        // Silence warnings from upgradable contracts with immutable variables
+        await upgrades.silenceWarnings();
+
         const gatewayNetworkFactory = await new GatewayNetwork__factory(deployer);
         const gatekeeperContractFactory = await new Gatekeeper__factory(deployer);
         const gatewayStakingFactory = await new GatewayStaking__factory(deployer);
         const dummyERC20Factory = await new DummyERC20__factory(deployer);
 
-        gatekeeperContract = await gatekeeperContractFactory.deploy();
+        gatekeeperContract = await upgrades.deployProxy(gatekeeperContractFactory, [deployer.address], { kind: 'uups'}) as Gatekeeper;
         await gatekeeperContract.deployed();
 
         dummyErc20Contract = await dummyERC20Factory.deploy('DummyToken', 'DT', parseEther(`1000`), deployer.address);
         await dummyErc20Contract.deployed();
 
-        gatewayStakingContract = await gatewayStakingFactory.deploy(dummyErc20Contract.address, 'GatewayProtocolShares', 'GPS');
+        gatewayStakingContract = await upgrades.deployProxy(gatewayStakingFactory, [deployer.address], 
+            {
+              kind: 'uups', 
+              constructorArgs: [dummyErc20Contract.address, 'GatewayProtocolShares', 'GPS'],
+              unsafeAllow: ['state-variable-immutable', 'constructor']
+            }) as GatewayStaking;
+
         await gatewayStakingContract.deployed();
 
-        gatekeeperNetworkContract = await gatewayNetworkFactory.deploy(gatekeeperContract.address, gatewayStakingContract.address);
+        gatekeeperNetworkContract = await upgrades.deployProxy(gatewayNetworkFactory, [deployer.address, gatekeeperContract.address, gatewayStakingContract.address], {kind: 'uups'}) as GatewayNetwork;
         await gatekeeperNetworkContract.deployed();
 
         await gatekeeperContract.setNetworkContractAddress(gatekeeperNetworkContract.address);

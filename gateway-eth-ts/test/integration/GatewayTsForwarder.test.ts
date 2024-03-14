@@ -140,8 +140,6 @@ describe("GatewayTS Forwarder", function () {
     dummyERC20 = DummyBrokenERC20__factory.connect(BNB_TESTNET_CONTRACT_ADDRESSES.erc20, gatekeeper);
     gatekeeperContract = Gatekeeper__factory.connect(BNB_TESTNET_CONTRACT_ADDRESSES.gatekeeper, gatekeeper)
     
-    await initTestNetwork(gatewayNetworkContract, gatekeeper);
-
 
     testNetworkId = (await gatewayNetworkContract.getNetworkId(testNetworkName)).toBigInt();
 
