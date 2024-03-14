@@ -107,8 +107,33 @@ export const PassInfo = (props: PassInfoProps) => {
     } else {
         // Show table of issuers state
         const { invalidPassData } = gatewayPortalData;
+
+        const passIssuers = invalidPassData.potentialIssuers.map(passIssuer => {
+            return (
+                <Grid item xs={12} key={passIssuer.issuerAddress.toString()}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={4}>
+                            <Typography variant='body2' noWrap style={{maxWidth: "50%"}}>
+                                {passIssuer.issuerAddress.toString()}
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Typography variant='body2'>
+                                {passIssuer.issuanceFee.toString()}
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Button variant="contained">
+                                Request Pass
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            )
+        });
+
         return(
-            <Grid container spacing={2}>
+            <Grid container spacing={2} alignItems={"center"} sx={{display: "flex", justifyContent: "center", maxWidth: "70%"}}>
                 <Grid item xs={4}>
                     <Typography variant='body1'>
                         Pass Issuer
@@ -119,32 +144,10 @@ export const PassInfo = (props: PassInfoProps) => {
                         Issuance Fee
                     </Typography>
                 </Grid>
-                <Grid item xs={4}></Grid>
+                <Grid item xs={4}> </Grid>
                 
                 {
-                    invalidPassData.potentialIssuers.map(passIssuer => {
-                        return (
-                            <Grid item xs={12}>
-                                <Grid container spacing={2}>
-                                    <Grid item xs={4}>
-                                        <Typography variant='body2'>
-                                            {passIssuer.issuerAddress}
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item xs={4}>
-                                        <Typography variant='body2'>
-                                            {passIssuer.issuanceFee}
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item xs={4}>
-                                        <Button variant="contained">
-                                            Request Pass
-                                        </Button>
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                        )
-                    })
+                    passIssuers
                 }
             </Grid>
         )
