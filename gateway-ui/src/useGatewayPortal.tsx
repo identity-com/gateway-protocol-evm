@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { GatewayGatekeeper, GatewayNetwork, GatewayTs, TokenState } from "@identity.com/gateway-eth-ts";
 import { Wallet, utils } from 'ethers';
-import { BNB_TESTNET_CONTRACT_ADDRESSES } from './utils';
+import { BNB_TESTNET_CONTRACT_ADDRESSES, ZERO_ADDRESS } from './utils';
 
 export interface GatewayPortalProps {
     userWallet: Wallet,
@@ -63,7 +63,7 @@ export const useGatewayPortal = (props: GatewayPortalProps) => {
     const [portalData, setPortalData] = useState<GatewayPortalData>(undefined);
 
     //ts-client interaction
-    useEffect(() => {
+    useMemo(() => {
 
         const load = async () => {
             const userAddress = userWallet.address;
@@ -89,12 +89,14 @@ export const useGatewayPortal = (props: GatewayPortalProps) => {
             if(hasValidToken) {
                 const tokenData = await tokenClient.getFirstTokenOnNetwork(userAddress, networkId.valueOf() as bigint);
                 const tokenGatekeeper = await tokenClient.getTokenGatekeeper(tokenData.tokenId.toString());
+
+                const feeTokenAddress = await networkResponse.supportedToken;
                 setPortalData({
                     hasValidPass: hasValidToken,
                     networkInfo: {
                         name: networkNameInBytes,
                         description: "This network can meet your KYC needs by ID verification and verifying liveliness",
-                        feeToken: await networkResponse.supportedToken
+                        feeToken: feeTokenAddress == ZERO_ADDRESS ? "BNB" : feeTokenAddress
                     },
                     validPassData: {
                         issuerAddress: tokenGatekeeper,

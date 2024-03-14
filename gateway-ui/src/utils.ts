@@ -7,3 +7,5 @@ export const BNB_TESTNET_CONTRACT_ADDRESSES = {
 }
 
 export const testNetworkName = utils.formatBytes32String("Identity.com KYC Verification");
+
+export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
