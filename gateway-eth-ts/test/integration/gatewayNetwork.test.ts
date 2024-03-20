@@ -20,7 +20,7 @@ describe("Gateway Network TS class", function () {
 
     before("Initialize gateway gatekeeper ts class", async function () {
         this.timeout(20000);
-        provider = new ethers.providers.JsonRpcProvider("http://localhost:8545");
+        provider = new ethers.providers.JsonRpcProvider("https://rpc.vnet.tenderly.co/devnet/bnb-testnet-devnet/5e8683f3-9c89-47dc-9589-f6ed4feb8b68");
 
         gatekeeper = gatekeeperOneTestnetWallet.connect(provider);
 
@@ -101,13 +101,13 @@ describe("Gateway Network TS class", function () {
             assert.equal(network.passExpireDurationInSeconds, newDefaultTime);
         }).timeout(15000);
 
-        it.skip("should successfully update the networks fee % of test network", async function () {
+        it("should successfully update the networks fee % of test network", async function () {
             const newDefaultFee = 100;
             const newFees = {issueFee: newDefaultFee, expireFee: newDefaultFee, refreshFee: newDefaultFee, freezeFee: newDefaultFee};
-            const result = await gatewayNetworkClient.updateFees(testNetworkName, newFees);
+            const result = await gatewayNetworkClient.updateFees(testNetworkNameWithErc20Fees, newFees);
             result.wait();
 
-            const networkId = await gatewayNetworkClient.getNetworkId(testNetworkName);
+            const networkId = await gatewayNetworkClient.getNetworkId(testNetworkNameWithErc20Fees);
             const network = await gatewayNetworkClient.getNetwork(networkId.toString());
 
             assert.equal(network.networkFee.expireFee, newFees.expireFee);

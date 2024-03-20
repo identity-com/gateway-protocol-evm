@@ -17,7 +17,7 @@ dotenv.config();
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-describe.only("GatewayTS", function () {
+describe("GatewayTS", function () {
   this.timeout(5_000);
   let gateway: GatewayTs;
   let provider: BaseProvider;
@@ -31,7 +31,7 @@ describe.only("GatewayTS", function () {
 
   before("Initialize GatewayTS class", async function () {
     this.timeout(10000);
-    provider = getDefaultProvider("https://rpc.vnet.tenderly.co/devnet/bnb-testnet-devnet/5e8683f3-9c89-47dc-9589-f6ed4feb8b68");
+    provider = getDefaultProvider("http://localhost:8545");
     network = await provider.getNetwork();
     gatekeeper = gatekeeperOneTestnetWallet.connect(provider);
 
