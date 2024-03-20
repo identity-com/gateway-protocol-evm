@@ -209,7 +209,8 @@ describe.only("GatewayTS", function () {
     assert.equal(BigNumber.from(token!.expiration).gt(originalExpiry), true);
   });
 
-  it.skip("Test subscribe", async () => {
+  it("Test subscribe", async () => {
+    await (await gateway.issue(sampleWalletAddress, testNetworkId, 0, 0, {feeSender: sampleWalletAddress, feeRecipient: gatekeeper.address})).wait();
     const token = await gateway.getFirstTokenOnNetwork(
       sampleWalletAddress,
       testNetworkId
