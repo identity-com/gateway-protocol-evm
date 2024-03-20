@@ -185,8 +185,8 @@ describe("GatewayTS Forwarder", function () {
       testNetworkId
     );
 
-    assert.equal(token.owner, sampleWalletAddress);
-    assert.equal(token.state, TokenState.ACTIVE);
+    assert.equal(token!.owner, sampleWalletAddress);
+    assert.equal(token!.state, TokenState.ACTIVE);
 
   }).timeout(15000);
 
@@ -275,16 +275,16 @@ describe("GatewayTS Forwarder", function () {
     );
   }).timeout(15000);
 
-  it.skip("Test freeze", async () => {
-    await relay(() => gateway.freeze(sampleWalletAddress, gatekeeperNetwork));
+  it("Test freeze", async () => {
+    await relay(() => gateway.freeze(sampleWalletAddress, testNetworkId));
 
-    const token = await gateway.getToken(
+    const token = await gateway.getFirstTokenOnNetwork(
       sampleWalletAddress,
-      gatekeeperNetwork
+      testNetworkId
     );
 
-    assert.equal(token.state, TokenState.FROZEN);
-  });
+    assert.equal(token!.state, TokenState.FROZEN);
+  }).timeout(30000);
 
   it.skip("Test unfreeze", async () => {
     await relay(() => gateway.unfreeze(sampleWalletAddress, gatekeeperNetwork));
