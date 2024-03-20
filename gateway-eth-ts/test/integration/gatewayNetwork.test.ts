@@ -20,7 +20,7 @@ describe("Gateway Network TS class", function () {
 
     before("Initialize gateway gatekeeper ts class", async function () {
         this.timeout(20000);
-        provider = new ethers.providers.JsonRpcProvider("https://rpc.vnet.tenderly.co/devnet/bnb-testnet-devnet/5e8683f3-9c89-47dc-9589-f6ed4feb8b68");
+        provider = new ethers.providers.JsonRpcProvider("http://localhost:8545");
 
         gatekeeper = gatekeeperOneTestnetWallet.connect(provider);
 
