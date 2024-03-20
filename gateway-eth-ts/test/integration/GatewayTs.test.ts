@@ -17,7 +17,7 @@ dotenv.config();
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-describe("GatewayTS", function () {
+describe.only("GatewayTS", function () {
   this.timeout(5_000);
   let gateway: GatewayTs;
   let provider: BaseProvider;
@@ -31,7 +31,7 @@ describe("GatewayTS", function () {
 
   before("Initialize GatewayTS class", async function () {
     this.timeout(10000);
-    provider = getDefaultProvider("http://localhost:8545");
+    provider = getDefaultProvider("https://rpc.vnet.tenderly.co/devnet/bnb-testnet-devnet/5e8683f3-9c89-47dc-9589-f6ed4feb8b68");
     network = await provider.getNetwork();
     gatekeeper = gatekeeperOneTestnetWallet.connect(provider);
 
@@ -73,7 +73,8 @@ describe("GatewayTS", function () {
     // should fail
     const shouldFail = gateway.getTokenId(
       walletWithMultipleTokens,
-      testNetworkId
+      testNetworkId,
+      true
     );
     await assert.rejects(shouldFail, Error);
 
@@ -90,7 +91,7 @@ describe("GatewayTS", function () {
     );
 
     assert.ok(tokenId);
-  });
+  }).timeout(30000);
 
   it("should issue a token with bitmask", async () => {
     const randomAddress = Wallet.createRandom().address;
@@ -196,11 +197,12 @@ describe("GatewayTS", function () {
     assert.equal(token!.state, TokenState.ACTIVE);
   });
 
-  it.skip("Test refresh", async () => {
+  it("Test refresh", async () => {
+    await (await gateway.issue(sampleWalletAddress, testNetworkId, 0, 0, {feeSender: sampleWalletAddress, feeRecipient: gatekeeper.address})).wait();
     let token = await gateway.getFirstTokenOnNetwork(sampleWalletAddress, testNetworkId);
 
     const originalExpiry = token!.expiration;
-    await gateway.refresh(sampleWalletAddress, testNetworkId, {feeSender: sampleWalletAddress, feeRecipient: gatekeeper.address}, 1000);
+    await gateway.refresh(sampleWalletAddress, testNetworkId, {feeSender: sampleWalletAddress, feeRecipient: gatekeeper.address}, originalExpiry.add(1000));
 
     token = await gateway.getFirstTokenOnNetwork(sampleWalletAddress, testNetworkId);
 
