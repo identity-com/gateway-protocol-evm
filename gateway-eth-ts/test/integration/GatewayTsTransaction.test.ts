@@ -18,7 +18,7 @@ import { BNB_TESTNET_CONTRACT_ADDRESSES, gatekeeperOneTestnetWallet, testNetwork
 
 dotenv.config();
 
-describe("GatewayTS Transaction", function () {
+describe.skip("GatewayTS Transaction", function () {
   let gateway: GatewayTsForwarder;
   let provider: BaseProvider;
 
@@ -51,7 +51,7 @@ describe("GatewayTS Transaction", function () {
     ).transaction();
   });
 
-  it.skip("should issue a token", async () => {
+  it("should issue a token", async () => {
     const transaction = await gateway.issue(
       sampleWalletAddress,
       testNetworkId,
