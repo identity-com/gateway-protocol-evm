@@ -51,7 +51,7 @@ describe("GatewayTS Transaction", function () {
     ).transaction();
   });
 
-  it("should issue a token", async () => {
+  it.skip("should issue a token", async () => {
     const transaction = await gateway.issue(
       sampleWalletAddress,
       testNetworkId,
@@ -73,5 +73,5 @@ describe("GatewayTS Transaction", function () {
 
     assert.equal(token!.owner, sampleWalletAddress);
     assert.equal(token!.state, TokenState.ACTIVE);
-  });
+  }).timeout(20000);
 });

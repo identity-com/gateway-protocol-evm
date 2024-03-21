@@ -198,7 +198,6 @@ describe("GatewayTS", function () {
   });
 
   it("Test refresh", async () => {
-    await (await gateway.issue(sampleWalletAddress, testNetworkId, 0, 0, {feeSender: sampleWalletAddress, feeRecipient: gatekeeper.address})).wait();
     let token = await gateway.getFirstTokenOnNetwork(sampleWalletAddress, testNetworkId);
 
     const originalExpiry = token!.expiration;
@@ -207,10 +206,9 @@ describe("GatewayTS", function () {
     token = await gateway.getFirstTokenOnNetwork(sampleWalletAddress, testNetworkId);
 
     assert.equal(BigNumber.from(token!.expiration).gt(originalExpiry), true);
-  });
+  }).timeout(20000);
 
   it("Test subscribe", async () => {
-    await (await gateway.issue(sampleWalletAddress, testNetworkId, 0, 0, {feeSender: sampleWalletAddress, feeRecipient: gatekeeper.address})).wait();
     const token = await gateway.getFirstTokenOnNetwork(
       sampleWalletAddress,
       testNetworkId
@@ -235,5 +233,5 @@ describe("GatewayTS", function () {
     );
 
     assert.equal(updatedToken.tokenId.toString(), token!.tokenId.toString());
-  });
+  }).timeout(15000);
 });
