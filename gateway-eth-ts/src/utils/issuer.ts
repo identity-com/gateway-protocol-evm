@@ -1,5 +1,7 @@
 import axios from "axios";
 
+const validUrl = require('valid-url');
+
 export interface IssuerConfig {
     displayName: string,
     gatewayIssuerEndpoint: string
@@ -15,7 +17,7 @@ export const resolveIssuerConfigFromServiceEndpoint = async (serviceEnpointUrl: 
     if(res.status !== 200) { 
         throw Error(await res.data); 
     }
-    
+
     const responseBody = res.data;
 
     let issuerConfig: IssuerConfig;
@@ -26,7 +28,7 @@ export const resolveIssuerConfigFromServiceEndpoint = async (serviceEnpointUrl: 
     }
 
     // Verify url exist
-    if(!responseBody.gatewayIssuerEndpoint) { 
+    if(!responseBody.gatewayIssuerEndpoint || validUrl.isWebUri(!responseBody.gatewayIssuerEndpoint)) { 
         throw Error("Issuer configuration does not have a valid gatewayIssuerEndpoint"); 
     }
 

@@ -10,6 +10,7 @@ const TEST_ISSUER_CONFIG: IssuerConfig = {
 const TEST_VALID_SERVICE_ENDPOINT = "https://service-endpoint.com";
 const TEST_INVALID_NAME_SERVICE_ENDPOINT = "https://service-endpoint-invalid-name.com";
 const TEST_INVALID_URL_SERVICE_ENDPOINT = "https://service-endpoint-invalid-url.com";
+const TEST_MALFORMED_URL_SERVICE_ENDPOINT = "https://service-endpoint-invalid-url.com";
 
 nock(TEST_VALID_SERVICE_ENDPOINT)
   .get(ISSUER_CONFIG_PATH)
@@ -22,6 +23,10 @@ nock(TEST_INVALID_NAME_SERVICE_ENDPOINT)
 nock(TEST_INVALID_URL_SERVICE_ENDPOINT)
 .get(ISSUER_CONFIG_PATH)
 .reply(200, {...TEST_ISSUER_CONFIG, gatewayIssuerEndpoint: ""});
+
+nock(TEST_MALFORMED_URL_SERVICE_ENDPOINT)
+.get(ISSUER_CONFIG_PATH)
+.reply(200, {...TEST_ISSUER_CONFIG, gatewayIssuerEndpoint: "ht:/t/sd.do-d.so"});
 
 describe.only("Issuer Config Utility", () => {
 
@@ -36,7 +41,11 @@ describe.only("Issuer Config Utility", () => {
         assert.rejects(() => resolveIssuerConfigFromServiceEndpoint(TEST_INVALID_NAME_SERVICE_ENDPOINT), "Issuer configuration does not have a displayName");
     });
 
-    it('should fail to resolve test issuer config due to malformed issuer endpoint', () => {
+    it('should fail to resolve test issuer config due to missing issuer endpoint', () => {
         assert.rejects(() => resolveIssuerConfigFromServiceEndpoint(TEST_INVALID_URL_SERVICE_ENDPOINT), "Issuer configuration does not have a valid gatewayIssuerEndpoint");
+    });
+
+    it('should fail to resolve test issuer config due to malformed issuer endpoint', () => {
+        assert.rejects(() => resolveIssuerConfigFromServiceEndpoint(TEST_MALFORMED_URL_SERVICE_ENDPOINT), "Issuer configuration does not have a valid gatewayIssuerEndpoint");
     });
 })

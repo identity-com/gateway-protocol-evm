@@ -35,7 +35,8 @@
     "ethers": "^5.7.2",
     "gas-price-oracle": "^0.3.3",
     "ramda": "^0.28.0",
-    "tslib": "^2.5.0"
+    "tslib": "^2.5.0",
+    "valid-url": "^1.0.9"
   },
   "devDependencies": {
     "@openzeppelin/defender-relay-client": "^1.54.1",
