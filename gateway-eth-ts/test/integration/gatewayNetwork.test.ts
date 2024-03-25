@@ -70,12 +70,12 @@ describe("Gateway Network TS class", function () {
             assert.equal(await gatewayNetworkClient.isGatekeeper(testNetworkNameWithErc20Fees, randomWallet.address), false);
         }).timeout(15000);
 
-        it.skip("should successfully update the primary authority of test network", async function () {
+        it("should successfully update the primary authority of test network", async function () {
             this.timeout(20000);
             const resultOne = await gatewayNetworkClient.updatePrimaryAuthority(testNetworkNameWithErc20Fees, randomWallet.address);
             await resultOne.wait();
 
-            const randomWalletClient = gatewayNetworkClient = new GatewayNetworkClass(randomWallet, BNB_TESTNET_CONTRACT_ADDRESSES.gatewayNetwork);
+            const randomWalletClient = new GatewayNetworkClass(randomWallet, BNB_TESTNET_CONTRACT_ADDRESSES.gatewayNetwork);
 
             const resultTwo = await randomWalletClient.claimPrimaryAuthority(testNetworkNameWithErc20Fees);
             await resultTwo.wait();
@@ -101,13 +101,13 @@ describe("Gateway Network TS class", function () {
             assert.equal(network.passExpireDurationInSeconds, newDefaultTime);
         }).timeout(15000);
 
-        it.skip("should successfully update the networks fee % of test network", async function () {
+        it("should successfully update the networks fee % of test network", async function () {
             const newDefaultFee = 100;
             const newFees = {issueFee: newDefaultFee, expireFee: newDefaultFee, refreshFee: newDefaultFee, freezeFee: newDefaultFee};
-            const result = await gatewayNetworkClient.updateFees(testNetworkName, newFees);
+            const result = await gatewayNetworkClient.updateFees(testNetworkNameWithErc20Fees, newFees);
             result.wait();
 
-            const networkId = await gatewayNetworkClient.getNetworkId(testNetworkName);
+            const networkId = await gatewayNetworkClient.getNetworkId(testNetworkNameWithErc20Fees);
             const network = await gatewayNetworkClient.getNetwork(networkId.toString());
 
             assert.equal(network.networkFee.expireFee, newFees.expireFee);

@@ -185,8 +185,8 @@ describe("GatewayTS Forwarder", function () {
       testNetworkId
     );
 
-    assert.equal(token.owner, sampleWalletAddress);
-    assert.equal(token.state, TokenState.ACTIVE);
+    assert.equal(token!.owner, sampleWalletAddress);
+    assert.equal(token!.state, TokenState.ACTIVE);
 
   }).timeout(15000);
 
@@ -275,62 +275,40 @@ describe("GatewayTS Forwarder", function () {
     );
   }).timeout(15000);
 
-  it.skip("Test freeze", async () => {
-    await relay(() => gateway.freeze(sampleWalletAddress, gatekeeperNetwork));
+  it("Test freeze", async () => {
+    await relay(() => gateway.freeze(sampleWalletAddress, testNetworkId));
 
-    const token = await gateway.getToken(
+    const token = await gateway.getFirstTokenOnNetwork(
       sampleWalletAddress,
-      gatekeeperNetwork
+      testNetworkId
     );
 
-    assert.equal(token.state, TokenState.FROZEN);
-  });
+    assert.equal(token!.state, TokenState.FROZEN);
+  }).timeout(30000);
 
-  it.skip("Test unfreeze", async () => {
-    await relay(() => gateway.unfreeze(sampleWalletAddress, gatekeeperNetwork));
+  it("Test unfreeze", async () => {
+    await relay(() => gateway.unfreeze(sampleWalletAddress, testNetworkId, {feeSender: sampleWalletAddress, feeRecipient: gatekeeper.address}));
 
-    const token = await gateway.getToken(
+    const token = await gateway.getFirstTokenOnNetwork(
       sampleWalletAddress,
-      gatekeeperNetwork
+      testNetworkId
     );
 
-    assert.equal(token.state, TokenState.ACTIVE);
+    assert.equal(token!.state, TokenState.ACTIVE);
   });
 
-  it.skip("Test refresh", async () => {
-    let token = await gateway.getToken(sampleWalletAddress, gatekeeperNetwork);
+  it("Test refresh", async () => {
+    let token = await gateway.getFirstTokenOnNetwork(sampleWalletAddress, testNetworkId);
 
-    const originalExpiry = token.expiration;
+    const originalExpiry = token!.expiration;
 
     await relay(() =>
-      gateway.refresh(sampleWalletAddress, gatekeeperNetwork, 1000)
+      gateway.refresh(sampleWalletAddress, testNetworkId, { feeSender: sampleWalletAddress, feeRecipient: gatekeeper.address} , originalExpiry.add(1000))
     );
 
-    token = await gateway.getToken(sampleWalletAddress, gatekeeperNetwork);
+    token = await gateway.getFirstTokenOnNetwork(sampleWalletAddress, testNetworkId);
 
-    assert.equal(BigNumber.from(token.expiration).gt(originalExpiry), true);
-  });
-
-  it.skip("Test refresh with an eth charge", async () => {
-    const gatekeeperBalanceBefore = await gatekeeper.getBalance();
-
-    const token = await gateway.getToken(
-      sampleWalletAddress,
-      gatekeeperNetwork
-    );
-    const chargeValue = BigNumber.from(1000);
-    const charge = makeWeiCharge(chargeValue, gatekeeper.address);
-
-    await relay(() =>
-      gateway.refresh(sampleWalletAddress, gatekeeperNetwork, 1000, charge)
-    );
-
-    const gatekeeperBalanceAfter = await gatekeeper.getBalance();
-
-    assert.equal(
-      chargeValue.toNumber(),
-      gatekeeperBalanceAfter.sub(gatekeeperBalanceBefore).toNumber()
-    );
+    assert.equal(BigNumber.from(token!.expiration).gt(originalExpiry), true);
   });
 
   it.skip("should allow parameterisable gas limit for the internal transaction", async () => {

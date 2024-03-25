@@ -73,7 +73,8 @@ describe("GatewayTS", function () {
     // should fail
     const shouldFail = gateway.getTokenId(
       walletWithMultipleTokens,
-      testNetworkId
+      testNetworkId,
+      true
     );
     await assert.rejects(shouldFail, Error);
 
@@ -90,7 +91,7 @@ describe("GatewayTS", function () {
     );
 
     assert.ok(tokenId);
-  });
+  }).timeout(30000);
 
   it("should issue a token with bitmask", async () => {
     const randomAddress = Wallet.createRandom().address;
@@ -196,18 +197,18 @@ describe("GatewayTS", function () {
     assert.equal(token!.state, TokenState.ACTIVE);
   });
 
-  it.skip("Test refresh", async () => {
+  it("Test refresh", async () => {
     let token = await gateway.getFirstTokenOnNetwork(sampleWalletAddress, testNetworkId);
 
     const originalExpiry = token!.expiration;
-    await gateway.refresh(sampleWalletAddress, testNetworkId, {feeSender: sampleWalletAddress, feeRecipient: gatekeeper.address}, 1000);
+    await gateway.refresh(sampleWalletAddress, testNetworkId, {feeSender: sampleWalletAddress, feeRecipient: gatekeeper.address}, originalExpiry.add(1000));
 
     token = await gateway.getFirstTokenOnNetwork(sampleWalletAddress, testNetworkId);
 
     assert.equal(BigNumber.from(token!.expiration).gt(originalExpiry), true);
-  });
+  }).timeout(20000);
 
-  it.skip("Test subscribe", async () => {
+  it("Test subscribe", async () => {
     const token = await gateway.getFirstTokenOnNetwork(
       sampleWalletAddress,
       testNetworkId
@@ -232,5 +233,5 @@ describe("GatewayTS", function () {
     );
 
     assert.equal(updatedToken.tokenId.toString(), token!.tokenId.toString());
-  });
+  }).timeout(15000);
 });
