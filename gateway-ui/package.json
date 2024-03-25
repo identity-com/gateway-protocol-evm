@@ -22,6 +22,7 @@
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
     "@fontsource/roboto": "^5.0.12",
+    "@identity.com/did-bnb-client": "^1.0.0-beta.1",
     "@mui/material": "^5.15.12",
     "@types/react": "^18.2.64",
     "@types/react-dom": "^18.2.21",
