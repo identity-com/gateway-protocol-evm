@@ -1,5 +1,4 @@
 import React from 'react';
-import { useNavigate, BrowserRouter as Router } from 'react-router-dom';
 import { Wallet } from "ethers";
 import { Box, Button, Chip, CircularProgress, Container, Grid, Stack, TextField, Typography } from '@mui/material';
 import { GatewayPortalData, useGatewayPortal } from './useGatewayPortal';
@@ -33,9 +32,7 @@ export const GatewayProtocolPortal = (props: GatewayProtocolPortalProps) => {
             <NetworkInfo name={networkName} description={networkInfo.description} feeTokenText={networkInfo.feeToken}/>
             
             {/* Section for displaying pass info */}
-            <Router>
-                <PassInfo gatewayPortalData={gatewayPortalData}/>
-            </Router>
+            <PassInfo gatewayPortalData={gatewayPortalData}/>
         </Stack>
     )
 }
@@ -81,8 +78,6 @@ interface PassInfoProps {
 export const PassInfo = (props: PassInfoProps) => {
     const { gatewayPortalData } = props;
 
-    const navigate = useNavigate();
-
     if(gatewayPortalData.hasValidPass) {
         // Show issuer state
         const { validPassData } = gatewayPortalData;
@@ -115,9 +110,6 @@ export const PassInfo = (props: PassInfoProps) => {
 
 
         const passIssuers = invalidPassData.potentialIssuers.map(passIssuer => {
-            const onClickLink = (event) => {
-                navigate(passIssuer.passRequestLink, {replace: false, relative: "route"});
-            }
             return (
                 <Grid item xs={12} key={passIssuer.issuerAlias.toString()}>
                     <Grid container spacing={2}>
@@ -134,12 +126,12 @@ export const PassInfo = (props: PassInfoProps) => {
                         <Grid item xs={4}>
                         {
                             passIssuer.passRequestLink.length == 0 ? 
-                                <Button variant="contained" disabled={passIssuer.passRequestLink.length == 0} onClick={onClickLink}>
+                                <Button variant="contained" disabled={passIssuer.passRequestLink.length == 0}>
                                         Request Pass
                                 </Button> 
                             :
                                 <a href={passIssuer.passRequestLink} target='_blank'>
-                                    <Button variant="contained" disabled={passIssuer.passRequestLink.length == 0} onClick={onClickLink}>
+                                    <Button variant="contained" disabled={passIssuer.passRequestLink.length == 0}>
                                         Request Pass
                                     </Button>
                                 </a>
