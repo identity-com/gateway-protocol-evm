@@ -22,12 +22,18 @@
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
     "@fontsource/roboto": "^5.0.12",
+    "@identity.com/did-bnb-client": "^1.0.0-beta.1",
     "@mui/material": "^5.15.12",
     "@types/react": "^18.2.64",
     "@types/react-dom": "^18.2.21",
+    "crypto-browserify": "^3.12.0",
     "ethers": "^5.7.2",
+    "os-browserify": "^0.3.0",
+    "path-browserify": "^1.0.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "stream-browserify": "^3.0.0",
+    "vm-browserify": "^1.1.2"
   },
   "resolutions": {
     "jackspeak": "2.1.1"

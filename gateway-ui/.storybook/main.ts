@@ -10,7 +10,7 @@ function getAbsolutePath(value: string): any {
   return dirname(require.resolve(join(value, "package.json")));
 }
 const config: StorybookConfig = {
-  stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
+  stories: ["../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
   addons: [
     getAbsolutePath("@storybook/addon-links"),
     getAbsolutePath("@storybook/addon-essentials"),
@@ -24,6 +24,21 @@ const config: StorybookConfig = {
         useSWC: true,
       },
     },
+  },
+  webpackFinal: async (config) => {
+    return {
+      ...config,
+      resolve: {
+        ...config.resolve,
+        fallback: {
+          "os": require.resolve("os-browserify/browser"),
+          "crypto": require.resolve("crypto-browserify"),
+          "path": require.resolve("path-browserify"),
+          "vm": require.resolve("vm-browserify"),
+          "stream": require.resolve("stream-browserify")
+        }
+      }
+    }
   },
   docs: {
     autodocs: "tag",

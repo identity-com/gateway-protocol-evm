@@ -108,13 +108,14 @@ export const PassInfo = (props: PassInfoProps) => {
         // Show table of issuers state
         const { invalidPassData } = gatewayPortalData;
 
+
         const passIssuers = invalidPassData.potentialIssuers.map(passIssuer => {
             return (
-                <Grid item xs={12} key={passIssuer.issuerAddress.toString()}>
+                <Grid item xs={12} key={passIssuer.issuerAlias.toString()}>
                     <Grid container spacing={2}>
                         <Grid item xs={4}>
                             <Typography variant='body2' noWrap style={{maxWidth: "50%"}}>
-                                {passIssuer.issuerAddress.toString()}
+                                {passIssuer.issuerAlias.toString()}
                             </Typography>
                         </Grid>
                         <Grid item xs={4}>
@@ -123,9 +124,18 @@ export const PassInfo = (props: PassInfoProps) => {
                             </Typography>
                         </Grid>
                         <Grid item xs={4}>
-                            <Button variant="contained">
-                                Request Pass
-                            </Button>
+                        {
+                            passIssuer.passRequestLink.length == 0 ? 
+                                <Button variant="contained" disabled={passIssuer.passRequestLink.length == 0}>
+                                        Request Pass
+                                </Button> 
+                            :
+                                <a href={passIssuer.passRequestLink} target='_blank'>
+                                    <Button variant="contained" disabled={passIssuer.passRequestLink.length == 0}>
+                                        Request Pass
+                                    </Button>
+                                </a>
+                        }
                         </Grid>
                     </Grid>
                 </Grid>

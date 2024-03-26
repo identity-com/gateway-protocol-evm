@@ -5,6 +5,12 @@ import { GatewayProtocolPortal } from '../index';
 const foundryDefaultPKWithToken = "0x7c852118294e51e653712a81e05800f419141751be58f605c371e15141b007a6"; // One of the 10 default addresses created by foundry. This address has a gateway token
 const publicRPC =  new ethers.providers.JsonRpcProvider("https://bsc-testnet-rpc.publicnode.com	");
 
+// const gatewayIssuerServiceOnTestnet = {
+//   fragment: 'gateway-issuer',
+//   service_type: 'gateway-issuer',
+//   service_endpoint: 'https://bafybeifqxswjdxzwl75ov2bpssvpyojhotahzopblfla63lsiht7ggnnwa.ipfs.w3s.link/'
+// }
+
 const meta: Meta<typeof GatewayProtocolPortal> = {
     title: 'Example protocol UI',
     component: GatewayProtocolPortal,
