@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate, BrowserRouter as Router } from 'react-router-dom';
 import { Wallet } from "ethers";
 import { Box, Button, Chip, CircularProgress, Container, Grid, Stack, TextField, Typography } from '@mui/material';
 import { GatewayPortalData, useGatewayPortal } from './useGatewayPortal';
@@ -32,7 +33,9 @@ export const GatewayProtocolPortal = (props: GatewayProtocolPortalProps) => {
             <NetworkInfo name={networkName} description={networkInfo.description} feeTokenText={networkInfo.feeToken}/>
             
             {/* Section for displaying pass info */}
-            <PassInfo gatewayPortalData={gatewayPortalData}/>
+            <Router>
+                <PassInfo gatewayPortalData={gatewayPortalData}/>
+            </Router>
         </Stack>
     )
 }
@@ -78,6 +81,8 @@ interface PassInfoProps {
 export const PassInfo = (props: PassInfoProps) => {
     const { gatewayPortalData } = props;
 
+    const navigate = useNavigate();
+
     if(gatewayPortalData.hasValidPass) {
         // Show issuer state
         const { validPassData } = gatewayPortalData;
@@ -108,13 +113,17 @@ export const PassInfo = (props: PassInfoProps) => {
         // Show table of issuers state
         const { invalidPassData } = gatewayPortalData;
 
+
         const passIssuers = invalidPassData.potentialIssuers.map(passIssuer => {
+            const onClickLink = (event) => {
+                navigate(passIssuer.passRequestLink, {replace: false, relative: "route"});
+            }
             return (
-                <Grid item xs={12} key={passIssuer.issuerAddress.toString()}>
+                <Grid item xs={12} key={passIssuer.issuerAlias.toString()}>
                     <Grid container spacing={2}>
                         <Grid item xs={4}>
                             <Typography variant='body2' noWrap style={{maxWidth: "50%"}}>
-                                {passIssuer.issuerAddress.toString()}
+                                {passIssuer.issuerAlias.toString()}
                             </Typography>
                         </Grid>
                         <Grid item xs={4}>
@@ -123,9 +132,18 @@ export const PassInfo = (props: PassInfoProps) => {
                             </Typography>
                         </Grid>
                         <Grid item xs={4}>
-                            <Button variant="contained">
-                                Request Pass
-                            </Button>
+                        {
+                            passIssuer.passRequestLink.length == 0 ? 
+                                <Button variant="contained" disabled={passIssuer.passRequestLink.length == 0} onClick={onClickLink}>
+                                        Request Pass
+                                </Button> 
+                            :
+                                <a href={passIssuer.passRequestLink} target='_blank'>
+                                    <Button variant="contained" disabled={passIssuer.passRequestLink.length == 0} onClick={onClickLink}>
+                                        Request Pass
+                                    </Button>
+                                </a>
+                        }
                         </Grid>
                     </Grid>
                 </Grid>

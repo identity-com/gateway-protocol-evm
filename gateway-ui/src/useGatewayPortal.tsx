@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { GatewayGatekeeper, GatewayNetwork, GatewayTs, TokenState } from "@identity.com/gateway-eth-ts";
+import { DidRegistry } from "@identity.com/did-bnb-client";
 import { Wallet, utils } from 'ethers';
 import { BNB_TESTNET_CONTRACT_ADDRESSES, ZERO_ADDRESS } from './utils';
+import { resolveIssuerConfigFromServiceEndpoint } from '@identity.com/gateway-eth-ts/dist/utils/issuer';
 
 export interface GatewayPortalProps {
     userWallet: Wallet,
@@ -25,9 +27,9 @@ interface InvalidPassData {
 }
 
 interface PassIssuer {
-    issuerAddress: string,
+    issuerAlias: string,
     issuanceFee: string,
-    passRequestLink: string
+    passRequestLink?: string
 }
 
 export interface GatewayPortalData {
@@ -61,8 +63,9 @@ export const useGatewayPortal = (props: GatewayPortalProps) => {
     const { networkName, userWallet } = props;
 
     const [portalData, setPortalData] = useState<GatewayPortalData>(undefined);
+    const [isNetworkLoaded, setIsNetworkLoaded] = useState<boolean>(false);
 
-    //ts-client interaction
+    // load gateway protocol data ts-client interaction
     useMemo(() => {
 
         const load = async () => {
@@ -110,7 +113,7 @@ export const useGatewayPortal = (props: GatewayPortalProps) => {
 
                 const gatekeepers = await Promise.all( gatekeeperAddressesInNetwork.map(async gatekeeperAddress => {
                     const fees = await gatekeeperClient.getGatekeeperNetworkData(networkNameInBytes,gatekeeperAddress);
-                    return { issuanceFee: fees.fees.issueFee, issuerAddress: gatekeeperAddress, passRequestLink: "" } as PassIssuer
+                    return { issuanceFee: fees.fees.issueFee, issuerAlias: gatekeeperAddress, passRequestLink: "" } as PassIssuer
                 }));
 
                 setPortalData({
@@ -125,10 +128,57 @@ export const useGatewayPortal = (props: GatewayPortalProps) => {
                     }
                 });
             }
-
+            setIsNetworkLoaded(true);
         }
+
         load();
     }, [networkName, userWallet]);
+
+    // Load issuer service for each gatekeeper
+    useEffect(() => {
+
+        const loadGatekeeperIssuerData = async () => {
+            // If we need to look up the service endpoint of each gatekeeper
+            if(portalData && portalData.invalidPassData) {
+                const didResitry = new DidRegistry(userWallet, BNB_TESTNET_CONTRACT_ADDRESSES.didRegistry, {chainEnvironment: 'testnet'});
+                const issuers = await Promise.all(portalData.invalidPassData.potentialIssuers.map(async (issuer) => {
+                    didResitry.setDidIdentifier(issuer.issuerAlias)
+                    // Resolve DID
+                    const issuerDid = await didResitry.resolve();
+
+                    // if DID has services
+                    if(issuerDid.service) {
+                        const issuerService = issuerDid.service.find(service => service.type === 'gateway-issuer');
+
+                        if(issuerService) {
+                            let issuerServiceEndpoint = issuerService.serviceEndpoint;
+
+                            if(Array.isArray(issuerServiceEndpoint)) {
+                                issuerServiceEndpoint = issuerService.serviceEndpoint[0];
+                            }
+                            const resolvedConfig = await resolveIssuerConfigFromServiceEndpoint(issuerServiceEndpoint.valueOf() as string);
+                            return {
+                                issuerAlias: resolvedConfig.displayName,
+                                issuanceFee: issuer.issuanceFee,
+                                passRequestLink: resolvedConfig.gatewayIssuerEndpoint
+                            }
+                        }
+                    }
+
+                    return issuer;
+                }));
+
+                setPortalData({
+                    ...portalData,
+                    invalidPassData: {
+                        potentialIssuers: issuers
+                    }
+                });
+            }
+        }
+        loadGatekeeperIssuerData();
+    }, [isNetworkLoaded]);
+    
     return portalData;
 }
 
