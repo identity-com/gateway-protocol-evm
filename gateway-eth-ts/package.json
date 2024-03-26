@@ -28,7 +28,7 @@
     "@ethersproject/abstract-signer": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
     "@types/ramda": "^0.28.14",
-    "axios": "^1.6.8",
+    "axios": "^0.28.0",
     "bignumber.js": "^9.0.1",
     "debug": "^4.3.4",
     "eth-sig-util": "2.1.1",
